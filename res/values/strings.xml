@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Cloreader</string>
+    <string name="app_name">Cloplayer</string>
     <string name="template_user_agent">"%1$s/%2$s (Linux; Android)"</string>
     <string name="preferenceResultString">ResultString</string>
     <string name="Preferences">Preferences</string>
