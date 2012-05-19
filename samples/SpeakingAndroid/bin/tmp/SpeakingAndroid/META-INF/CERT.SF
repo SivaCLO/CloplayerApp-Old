@@ -1,0 +1,58 @@
+Signature-Version: 1.0
+Created-By: 1.0 (Android)
+SHA1-Digest-Manifest: 5bP+fH7f9HGX3d9dAJHwlSm5g38=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/dict/digits.dict
+SHA1-Digest: sQ+k+4s1tOyWzJZ3G+/kABbnTJs=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/noisedict
+SHA1-Digest: 2O3Cmcg45tx1MslV6rR0KalgCJs=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/README
+SHA1-Digest: pgUJx6i03GqtbLRAGiaktt8N6+A=
+
+Name: resources.arsc
+SHA1-Digest: GoPP3BPnRP26lA1WVzbcDALNZ+c=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/means
+SHA1-Digest: JQgIUzjzzOMG0YbkLOLn9H+3UOQ=
+
+Name: classes.dex
+SHA1-Digest: KC8kqzIF9x/c1darkdxHq7DXGhI=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/mixture_weights
+SHA1-Digest: 65ak/VrL3IFPYEPC9EML2UjKmW0=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/feat.params
+SHA1-Digest: OpnoBmeo9YIoDu7828UrKG+g7kU=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/license.terms
+SHA1-Digest: e4ysxr4aDD3yA5GEILBuRGG/W4s=
+
+Name: edu/cmu/sphinx/config/aligner.xml
+SHA1-Digest: ZzFkkgLVwTzHa8tmEs3+NVGjpJA=
+
+Name: res/layout/main.xml
+SHA1-Digest: 75gqNrMsQbSlPU7kSivCMopEkoE=
+
+Name: com/sun/speech/freetts/internal_voices.txt
+SHA1-Digest: 7mLAu2qjHd3lljtweobpMsYGSPQ=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/dict/alpha.dict
+SHA1-Digest: YyqFN/rbeR5jTpxwMmJ+LpROpfo=
+
+Name: AndroidManifest.xml
+SHA1-Digest: 8uT1k+0PIi7aCkyaY9wf4HL3nVY=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/mdef
+SHA1-Digest: xYFxy92YbM7JJFs6FsoejTv9HX0=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/transition_matrices
+SHA1-Digest: V7eESzit1oPvOsggS4Ao5ZSFfQI=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/dict/cmudict.0.6d
+SHA1-Digest: 1xgxwG8B/4J35uZ2ydTzlLGZIaQ=
+
+Name: WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz/variances
+SHA1-Digest: 9Xul/W8lL6wha8yRCQTjaQrURVE=
+

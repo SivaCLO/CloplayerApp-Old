@@ -1,0 +1,2 @@
+set solib-search-path ./obj/local/armeabi
+directory /home/shiva/programs/android-ndk-r7/platforms/android-8/arch-arm/usr/include /home/shiva/programs/sphinxbase/include/android /home/shiva/programs/pocketsphinx/include /home/shiva/programs/pocketsphinx/src/libpocketsphinx jni /home/shiva/programs/sphinxbase/src/libsphinxbase/fe /home/shiva/programs/sphinxbase/src/libsphinxbase/feat /home/shiva/programs/sphinxbase/src/libsphinxbase/lm /home/shiva/programs/sphinxbase/src/libsphinxbase/util /home/shiva/programs/android-ndk-r7/sources/cxx-stl/system
