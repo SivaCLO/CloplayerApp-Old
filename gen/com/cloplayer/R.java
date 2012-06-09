@@ -20,52 +20,68 @@ public final class R {
         public static final int clogrey=0x7f060001;
     }
     public static final class drawable {
-        public static final int app_sample_code=0x7f020000;
-        public static final int banner=0x7f020001;
-        public static final int bottom_border_back=0x7f020002;
-        public static final int logo=0x7f020003;
-        public static final int news_logo_bbc=0x7f020004;
-        public static final int news_logo_cnn=0x7f020005;
-        public static final int news_logo_default=0x7f020006;
-        public static final int news_logo_economictimes=0x7f020007;
-        public static final int news_logo_espn=0x7f020008;
-        public static final int news_logo_hindustantimes=0x7f020009;
-        public static final int news_logo_readwriteweb=0x7f02000a;
-        public static final int news_logo_reuters=0x7f02000b;
-        public static final int news_logo_techcrunch=0x7f02000c;
-        public static final int news_logo_timesofindia=0x7f02000d;
-        public static final int progressbar_drawable=0x7f02000e;
-        public static final int top_border_back=0x7f02000f;
+        public static final int banner=0x7f020000;
+        public static final int bottom_border_back=0x7f020001;
+        public static final int logo=0x7f020002;
+        public static final int news_logo_bbc=0x7f020003;
+        public static final int news_logo_cnn=0x7f020004;
+        public static final int news_logo_default=0x7f020005;
+        public static final int news_logo_economictimes=0x7f020006;
+        public static final int news_logo_espn=0x7f020007;
+        public static final int news_logo_hindustantimes=0x7f020008;
+        public static final int news_logo_readwriteweb=0x7f020009;
+        public static final int news_logo_reuters=0x7f02000a;
+        public static final int news_logo_techcrunch=0x7f02000b;
+        public static final int news_logo_timesofindia=0x7f02000c;
+        public static final int progressbar_drawable=0x7f02000d;
+        public static final int top_border_back=0x7f02000e;
     }
     public static final class id {
-        public static final int add=0x7f09001a;
+        public static final int add=0x7f09002a;
+        public static final int back1_button=0x7f090023;
+        public static final int back5_button=0x7f090024;
+        public static final int buttonsLayout=0x7f09001c;
         public static final int channel_name=0x7f090003;
         public static final int checkboxPublic=0x7f090004;
         public static final int create=0x7f090000;
+        public static final int detail=0x7f090026;
         public static final int details=0x7f090009;
         public static final int favoriteButton=0x7f09000f;
         public static final int headline=0x7f09000a;
-        public static final int introContinue=0x7f090011;
-        public static final int introText=0x7f090010;
+        public static final int introContinue=0x7f090013;
+        public static final int introText=0x7f090012;
         public static final int label=0x7f09000e;
-        public static final int list=0x7f090018;
-        public static final int login=0x7f090015;
-        public static final int loginText=0x7f090012;
-        public static final int login_email=0x7f090013;
-        public static final int login_password=0x7f090014;
+        public static final int list=0x7f090028;
+        public static final int login=0x7f090017;
+        public static final int loginText=0x7f090014;
+        public static final int login_email=0x7f090015;
+        public static final int login_password=0x7f090016;
         public static final int logo=0x7f090008;
         public static final int logout=0x7f090001;
-        public static final int preferences=0x7f09001b;
+        public static final int minimize_button=0x7f09001f;
+        public static final int next1_button=0x7f090021;
+        public static final int next5_button=0x7f090022;
+        public static final int noNetworkPage=0x7f090019;
+        public static final int noNetworkText=0x7f09001a;
+        public static final int now_playing=0x7f090010;
+        public static final int pause_button=0x7f09001d;
+        public static final int play_story=0x7f09002b;
+        public static final int preferences=0x7f09002c;
+        public static final int progressBar=0x7f090025;
         public static final int retry=0x7f09000d;
         public static final int retryPage=0x7f090002;
         public static final int retrytext=0x7f09000c;
-        public static final int root=0x7f090016;
-        public static final int save=0x7f090017;
+        public static final int root=0x7f090018;
+        public static final int save=0x7f090027;
         public static final int source=0x7f09000b;
+        public static final int sourceUrl=0x7f09001b;
+        public static final int source_list=0x7f090011;
         public static final int spinner1=0x7f090005;
         public static final int spinner2=0x7f090006;
         public static final int spinner3=0x7f090007;
-        public static final int userText=0x7f090019;
+        public static final int stop_button=0x7f090020;
+        public static final int unpause_button=0x7f09001e;
+        public static final int userText=0x7f090029;
     }
     public static final class layout {
         public static final int channel_tabs=0x7f030000;
@@ -73,12 +89,16 @@ public final class R {
         public static final int current_story=0x7f030002;
         public static final int dataload=0x7f030003;
         public static final int edit_row_layout=0x7f030004;
-        public static final int intro=0x7f030005;
-        public static final int login=0x7f030006;
-        public static final int logo=0x7f030007;
-        public static final int main=0x7f030008;
-        public static final int pref=0x7f030009;
-        public static final int story=0x7f03000a;
+        public static final int home=0x7f030005;
+        public static final int intro=0x7f030006;
+        public static final int login=0x7f030007;
+        public static final int logo=0x7f030008;
+        public static final int main=0x7f030009;
+        public static final int no_network=0x7f03000a;
+        public static final int player=0x7f03000b;
+        public static final int pref=0x7f03000c;
+        public static final int source_details=0x7f03000d;
+        public static final int story=0x7f03000e;
     }
     public static final class menu {
         public static final int menu=0x7f080000;
@@ -97,6 +117,7 @@ public final class R {
     public static final class string {
         public static final int Preferences=0x7f070003;
         public static final int app_name=0x7f070000;
+        public static final int cloplayer_notification=0x7f07000c;
         public static final int continueString=0x7f070006;
         public static final int handsFreeOff=0x7f07000a;
         public static final int handsFreeOn=0x7f070009;

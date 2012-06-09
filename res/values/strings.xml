@@ -12,7 +12,6 @@
     <string name="previousString">Previous</string>
     <string name="handsFreeOn">Hands Free On</string>
     <string name="handsFreeOff">Hands Free Off</string>
-    
     <string name="source_prompt">Select Source</string>
 
     <string-array name="source_array">
@@ -26,4 +25,6 @@
         <item>Neptune</item>
     </string-array>
 
+    <string name="cloplayer_notification">Cloplayer</string>
+    
 </resources>
