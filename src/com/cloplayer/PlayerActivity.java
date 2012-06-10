@@ -1,6 +1,7 @@
 package com.cloplayer;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +38,8 @@ public class PlayerActivity extends Activity {
 	TextView detailText;
 	ProgressBar progress;
 
+	ProgressDialog progDailog;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,8 +55,8 @@ public class PlayerActivity extends Activity {
 		headlineText = (TextView) findViewById(R.id.headline);
 		detailText = (TextView) findViewById(R.id.detail);
 		progress = (ProgressBar) findViewById(R.id.progressBar);
-		
-		detailText.setMovementMethod(ScrollingMovementMethod.getInstance());		
+
+		detailText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
 		globalSettings = getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
 
@@ -89,7 +92,7 @@ public class PlayerActivity extends Activity {
 				sendEmptyMessageToService(CloplayerService.MSG_UNPAUSE_PLAYING);
 			}
 		});
-		
+
 		Button next1Button = (Button) findViewById(R.id.next1_button);
 		next1Button.setOnClickListener(new OnClickListener() {
 			@Override
@@ -97,7 +100,7 @@ public class PlayerActivity extends Activity {
 				sendEmptyMessageToService(CloplayerService.MSG_NEXT1);
 			}
 		});
-		
+
 		Button next5Button = (Button) findViewById(R.id.next5_button);
 		next5Button.setOnClickListener(new OnClickListener() {
 			@Override
@@ -105,7 +108,7 @@ public class PlayerActivity extends Activity {
 				sendEmptyMessageToService(CloplayerService.MSG_NEXT5);
 			}
 		});
-		
+
 		Button back1Button = (Button) findViewById(R.id.back1_button);
 		back1Button.setOnClickListener(new OnClickListener() {
 			@Override
@@ -113,7 +116,7 @@ public class PlayerActivity extends Activity {
 				sendEmptyMessageToService(CloplayerService.MSG_BACK1);
 			}
 		});
-		
+
 		Button back5Button = (Button) findViewById(R.id.back5_button);
 		back5Button.setOnClickListener(new OnClickListener() {
 			@Override
@@ -121,6 +124,10 @@ public class PlayerActivity extends Activity {
 				sendEmptyMessageToService(CloplayerService.MSG_BACK5);
 			}
 		});
+
+		progDailog = new ProgressDialog(this);
+		progDailog.setMessage("Loading...");
+		progDailog.setIndeterminate(true);
 
 		resumeService();
 
@@ -134,11 +141,11 @@ public class PlayerActivity extends Activity {
 			int progressMax = globalSettings.getInt("nowPlayingProgressMax", 1);
 			int playProgress = globalSettings.getInt("nowPlayingPlayProgress", 0);
 			int downloadProgress = globalSettings.getInt("nowPlayingDownloadProgress", 0);
-			
+
 			sourceUrlText.setText(sourceUrl);
 			headlineText.setText(headline);
 			detailText.setText(detail);
-			
+
 			progress.setMax(progressMax);
 			progress.setProgress(playProgress);
 			progress.setSecondaryProgress(downloadProgress);
@@ -147,6 +154,10 @@ public class PlayerActivity extends Activity {
 		}
 
 		doBindService();
+
+		if (progress.getProgress() == progress.getSecondaryProgress() && progress.getProgress() != progress.getMax()) {
+			progDailog.show();
+		}
 	}
 
 	private ServiceConnection mConnection = new ServiceConnection() {
@@ -233,9 +244,13 @@ public class PlayerActivity extends Activity {
 				break;
 			case CloplayerService.MSG_UPDATE_PLAY_PROGRESS:
 				progress.setProgress(msg.arg1);
+				if (progress.getProgress() == progress.getSecondaryProgress() && progress.getProgress() != progress.getMax()) {
+					progDailog.show();
+				}
 				break;
 			case CloplayerService.MSG_UPDATE_DOWNLOAD_PROGRESS:
 				progress.setSecondaryProgress(msg.arg1);
+				progDailog.hide();
 				break;
 			case CloplayerService.MSG_UPDATE_PROGRESS_MAX:
 				progress.setMax(msg.arg1);

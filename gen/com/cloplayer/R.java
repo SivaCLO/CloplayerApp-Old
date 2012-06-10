@@ -9,15 +9,15 @@ package com.cloplayer;
 
 public final class R {
     public static final class array {
-        public static final int source_array=0x7f050002;
-        public static final int topicOptionValues=0x7f050001;
-        public static final int topicOptions=0x7f050000;
+        public static final int source_array=0x7f040002;
+        public static final int topicOptionValues=0x7f040001;
+        public static final int topicOptions=0x7f040000;
     }
     public static final class attr {
     }
     public static final class color {
-        public static final int cloblue=0x7f060000;
-        public static final int clogrey=0x7f060001;
+        public static final int cloblue=0x7f050000;
+        public static final int clogrey=0x7f050001;
     }
     public static final class drawable {
         public static final int banner=0x7f020000;
@@ -37,51 +37,51 @@ public final class R {
         public static final int top_border_back=0x7f02000e;
     }
     public static final class id {
-        public static final int add=0x7f09002a;
-        public static final int back1_button=0x7f090023;
-        public static final int back5_button=0x7f090024;
-        public static final int buttonsLayout=0x7f09001c;
-        public static final int channel_name=0x7f090003;
-        public static final int checkboxPublic=0x7f090004;
-        public static final int create=0x7f090000;
-        public static final int detail=0x7f090026;
-        public static final int details=0x7f090009;
-        public static final int favoriteButton=0x7f09000f;
-        public static final int headline=0x7f09000a;
-        public static final int introContinue=0x7f090013;
-        public static final int introText=0x7f090012;
-        public static final int label=0x7f09000e;
-        public static final int list=0x7f090028;
-        public static final int login=0x7f090017;
-        public static final int loginText=0x7f090014;
-        public static final int login_email=0x7f090015;
-        public static final int login_password=0x7f090016;
-        public static final int logo=0x7f090008;
-        public static final int logout=0x7f090001;
-        public static final int minimize_button=0x7f09001f;
-        public static final int next1_button=0x7f090021;
-        public static final int next5_button=0x7f090022;
-        public static final int noNetworkPage=0x7f090019;
-        public static final int noNetworkText=0x7f09001a;
-        public static final int now_playing=0x7f090010;
-        public static final int pause_button=0x7f09001d;
-        public static final int play_story=0x7f09002b;
-        public static final int preferences=0x7f09002c;
-        public static final int progressBar=0x7f090025;
-        public static final int retry=0x7f09000d;
-        public static final int retryPage=0x7f090002;
-        public static final int retrytext=0x7f09000c;
-        public static final int root=0x7f090018;
-        public static final int save=0x7f090027;
-        public static final int source=0x7f09000b;
-        public static final int sourceUrl=0x7f09001b;
-        public static final int source_list=0x7f090011;
-        public static final int spinner1=0x7f090005;
-        public static final int spinner2=0x7f090006;
-        public static final int spinner3=0x7f090007;
-        public static final int stop_button=0x7f090020;
-        public static final int unpause_button=0x7f09001e;
-        public static final int userText=0x7f090029;
+        public static final int add=0x7f08002a;
+        public static final int back1_button=0x7f080023;
+        public static final int back5_button=0x7f080024;
+        public static final int buttonsLayout=0x7f08001c;
+        public static final int channel_name=0x7f080003;
+        public static final int checkboxPublic=0x7f080004;
+        public static final int create=0x7f080000;
+        public static final int detail=0x7f080026;
+        public static final int details=0x7f080009;
+        public static final int favoriteButton=0x7f08000f;
+        public static final int headline=0x7f08000a;
+        public static final int introContinue=0x7f080013;
+        public static final int introText=0x7f080012;
+        public static final int label=0x7f08000e;
+        public static final int list=0x7f080028;
+        public static final int login=0x7f080017;
+        public static final int loginText=0x7f080014;
+        public static final int login_email=0x7f080015;
+        public static final int login_password=0x7f080016;
+        public static final int logo=0x7f080008;
+        public static final int logout=0x7f080001;
+        public static final int minimize_button=0x7f08001f;
+        public static final int next1_button=0x7f080021;
+        public static final int next5_button=0x7f080022;
+        public static final int noNetworkPage=0x7f080019;
+        public static final int noNetworkText=0x7f08001a;
+        public static final int now_playing=0x7f080010;
+        public static final int pause_button=0x7f08001d;
+        public static final int play_story=0x7f08002b;
+        public static final int preferences=0x7f08002c;
+        public static final int progressBar=0x7f080025;
+        public static final int retry=0x7f08000d;
+        public static final int retryPage=0x7f080002;
+        public static final int retrytext=0x7f08000c;
+        public static final int root=0x7f080018;
+        public static final int save=0x7f080027;
+        public static final int source=0x7f08000b;
+        public static final int sourceUrl=0x7f08001b;
+        public static final int source_list=0x7f080011;
+        public static final int spinner1=0x7f080005;
+        public static final int spinner2=0x7f080006;
+        public static final int spinner3=0x7f080007;
+        public static final int stop_button=0x7f080020;
+        public static final int unpause_button=0x7f08001e;
+        public static final int userText=0x7f080029;
     }
     public static final class layout {
         public static final int channel_tabs=0x7f030000;
@@ -101,32 +101,21 @@ public final class R {
         public static final int story=0x7f03000e;
     }
     public static final class menu {
-        public static final int menu=0x7f080000;
-    }
-    public static final class raw {
-        public static final int feat=0x7f040000;
-        public static final int hub4dic=0x7f040001;
-        public static final int hub4dmp=0x7f040002;
-        public static final int mdef=0x7f040003;
-        public static final int means=0x7f040004;
-        public static final int noisedict=0x7f040005;
-        public static final int sendump=0x7f040006;
-        public static final int transition_matrices=0x7f040007;
-        public static final int variances=0x7f040008;
+        public static final int menu=0x7f070000;
     }
     public static final class string {
-        public static final int Preferences=0x7f070003;
-        public static final int app_name=0x7f070000;
-        public static final int cloplayer_notification=0x7f07000c;
-        public static final int continueString=0x7f070006;
-        public static final int handsFreeOff=0x7f07000a;
-        public static final int handsFreeOn=0x7f070009;
-        public static final int nextString=0x7f070007;
-        public static final int pauseString=0x7f070005;
-        public static final int preferenceResultString=0x7f070002;
-        public static final int previousString=0x7f070008;
-        public static final int source_prompt=0x7f07000b;
-        public static final int template_user_agent=0x7f070001;
-        public static final int userId=0x7f070004;
+        public static final int Preferences=0x7f060003;
+        public static final int app_name=0x7f060000;
+        public static final int cloplayer_notification=0x7f06000c;
+        public static final int continueString=0x7f060006;
+        public static final int handsFreeOff=0x7f06000a;
+        public static final int handsFreeOn=0x7f060009;
+        public static final int nextString=0x7f060007;
+        public static final int pauseString=0x7f060005;
+        public static final int preferenceResultString=0x7f060002;
+        public static final int previousString=0x7f060008;
+        public static final int source_prompt=0x7f06000b;
+        public static final int template_user_agent=0x7f060001;
+        public static final int userId=0x7f060004;
     }
 }

@@ -9,7 +9,7 @@ import java.io.IOException;
 import marytts.client.MaryClient;
 import marytts.client.http.Address;
 
-public class MaryConnector {
+public class MaryConnector { 
 
 	public static byte[] getAudio(String text) {
 

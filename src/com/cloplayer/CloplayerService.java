@@ -17,6 +17,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.cloplayer.http.PlayTask;
 import com.cloplayer.story.CloplayerStory;
@@ -37,6 +38,7 @@ public class CloplayerService extends Service {
 	public static final int MSG_STOP_PLAYING = 4;
 	public static final int MSG_PAUSE_PLAYING = 5;
 	public static final int MSG_UNPAUSE_PLAYING = 6;
+	public static final int MSG_STORE_SOURCE = 7;
 
 	public static final int MSG_NEXT1 = 11;
 	public static final int MSG_NEXT5 = 12;
@@ -54,6 +56,8 @@ public class CloplayerService extends Service {
 	public boolean isPaused = false;
 	public LinkedList<PlayItem> playQueue;
 	public PlayTask playTask;
+	
+	public CloplayerStory currentStory;
 
 	public static CloplayerService getInstace() {
 		return instance;
@@ -88,6 +92,9 @@ public class CloplayerService extends Service {
 				break;
 			case MSG_UNREGISTER_CLIENT:
 				mClients.remove(msg.replyTo);
+				break;
+			case MSG_STORE_SOURCE:
+				storeSource(msg);
 				break;
 			case MSG_PLAY_SOURCE:
 				playSource(msg);
@@ -145,8 +152,26 @@ public class CloplayerService extends Service {
 
 		CloplayerService.getInstace().showNotification("Loading", "Loading");
 
-		new CloplayerStory(sourceUrl).loadAndPlay();
+		currentStory = new CloplayerStory(sourceUrl);
+		currentStory.loadAndPlay();
+	}
 
+	private void storeSource(Message msg) {
+
+		isPaused = false;
+
+		String sourceUrl = (String) msg.obj;
+		
+		stopReading();
+
+		playQueue = new LinkedList<PlayItem>();
+		playTask = new PlayTask();
+		playTask.start();
+
+		CloplayerService.getInstace().showNotification("Loading", "Loading");
+
+		currentStory = new CloplayerStory(sourceUrl);
+		currentStory.loadAndStore();
 	}
 
 	private void stopReading() {
@@ -175,6 +200,8 @@ public class CloplayerService extends Service {
 
 	private void unpauseReading() {
 		if (isPaused) {
+			int currentLine = playTask.getCurrentLine();
+			playTask = new PlayTask(currentLine);
 			playTask.start();
 			isPaused = false;
 		}

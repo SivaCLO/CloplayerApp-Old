@@ -28,14 +28,27 @@ public class PlayTask extends AsyncTask<String, String, String> {
 	@Override
 	protected String doInBackground(String... data) {
 
+		SharedPreferences globalSettings = CloplayerService.getInstace().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
+		SharedPreferences.Editor editor = globalSettings.edit();
+		int progressMax = globalSettings.getInt("nowPlayingPlayProgress", 0);
+
+		if (currentLine < 0)
+			currentLine = 0;
+		if (currentLine > CloplayerService.getInstace().playQueue.size() && CloplayerService.getInstace().playQueue.size() == 0)
+			currentLine = 0;
+		if (currentLine >= CloplayerService.getInstace().playQueue.size() && CloplayerService.getInstace().playQueue.size() != progressMax)
+			currentLine = CloplayerService.getInstace().playQueue.size() - 1;
+		if (currentLine > CloplayerService.getInstace().playQueue.size() && CloplayerService.getInstace().playQueue.size() == progressMax)
+			currentLine = CloplayerService.getInstace().playQueue.size() - 1;
+		if (currentLine == CloplayerService.getInstace().playQueue.size() && CloplayerService.getInstace().playQueue.size() == progressMax)
+			currentLine = CloplayerService.getInstace().playQueue.size();
+
 		while (!isCanceled) {
 
 			CloplayerService.getInstace().sendIntMessageToUI(CloplayerService.MSG_UPDATE_PLAY_PROGRESS, currentLine);
 
 			Log.e("Test", "CurrentLine : Reading" + currentLine);
 
-			SharedPreferences globalSettings = CloplayerService.getInstace().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
-			SharedPreferences.Editor editor = globalSettings.edit();
 			editor.putInt("nowPlayingPlayProgress", currentLine);
 			editor.commit();
 
@@ -58,7 +71,9 @@ public class PlayTask extends AsyncTask<String, String, String> {
 			editor.putString("nowPlayingDetail", currPlayItem.getText());
 			editor.commit();
 
-			if (at.write(currPlayItem.getByteArray(), 0, currPlayItem.getByteArray().length) == currPlayItem.getByteArray().length) {
+			at.write(currPlayItem.getByteArray(), 0, currPlayItem.getByteArray().length);
+
+			if (!isCanceled) {
 				currentLine++;
 
 				CloplayerService.getInstace().sendIntMessageToUI(CloplayerService.MSG_UPDATE_PLAY_PROGRESS, currentLine);
