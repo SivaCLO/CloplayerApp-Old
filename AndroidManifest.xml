@@ -92,6 +92,7 @@
         <activity
             android:name=".PlayNowActivity"
             android:label="Cloplayer - Play Now"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
@@ -101,6 +102,13 @@
 
                 <data android:mimeType="text/plain" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".HomeActivity"
+            android:label="Cloplayer"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -116,6 +124,5 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
 </manifest>

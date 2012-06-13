@@ -55,12 +55,7 @@ public class MaryConnector {
 			mary.process(text, inputType, outputType, locale, audioType, defaultVoiceName, null, effects, null, baos);
 
 			byteArray = baos.toByteArray();
-
-			File dstFile = new File("/sdcard/download/dst.wav");
-			DataOutputStream outFile = new DataOutputStream(new FileOutputStream(dstFile));
-			outFile.write(byteArray, 0, byteArray.length);
-			outFile.close();
-
+ 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

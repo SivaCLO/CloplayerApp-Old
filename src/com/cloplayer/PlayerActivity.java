@@ -7,13 +7,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.text.Spannable;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +27,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.cloplayer.sqlite.Story;
 import com.cloplayer.utils.ServerConstants;
 
 public class PlayerActivity extends Activity {
@@ -64,7 +69,9 @@ public class PlayerActivity extends Activity {
 		stopButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				sendEmptyMessageToService(CloplayerService.MSG_STOP_PLAYING);
+				Intent intentToGo = new Intent();
+				intentToGo.setClass(PlayerActivity.this, HomeActivity.class);
+				startActivity(intentToGo);
 				finish();
 			}
 		});
@@ -134,36 +141,25 @@ public class PlayerActivity extends Activity {
 	}
 
 	private void resumeService() {
-		if (CloplayerService.isRunning()) {
-			String headline = globalSettings.getString("nowPlayingHeadline", "");
-			String detail = globalSettings.getString("nowPlayingDetail", "");
-			String sourceUrl = globalSettings.getString("nowPlayingSource", "");
-			int progressMax = globalSettings.getInt("nowPlayingProgressMax", 1);
-			int playProgress = globalSettings.getInt("nowPlayingPlayProgress", 0);
-			int downloadProgress = globalSettings.getInt("nowPlayingDownloadProgress", 0);
-
-			sourceUrlText.setText(sourceUrl);
-			headlineText.setText(headline);
-			detailText.setText(detail);
-
-			progress.setMax(progressMax);
-			progress.setProgress(playProgress);
-			progress.setSecondaryProgress(downloadProgress);
-		} else {
+		if (!CloplayerService.isRunning()) {
 			startService(new Intent(PlayerActivity.this, CloplayerService.class));
 		}
 
 		doBindService();
-
-		if (progress.getProgress() == progress.getSecondaryProgress() && progress.getProgress() != progress.getMax()) {
-			progDailog.show();
-		}
 	}
 
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mService = new Messenger(service);
 			sendEmptyMessageToService(CloplayerService.MSG_REGISTER_CLIENT);
+
+			int storyId = globalSettings.getInt("nowPlaying", -1);
+			if (storyId != -1) {
+				Story story = CloplayerService.getInstance().datasource.getStory(storyId);
+				updateUI(true, story);
+			} else {
+				headlineText.setText("Loading");
+			}
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -233,31 +229,51 @@ public class PlayerActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case CloplayerService.MSG_UPDATE_SOURCE_URL:
-				sourceUrlText.setText((String) msg.obj);
-				break;
-			case CloplayerService.MSG_UPDATE_HEADLINE:
-				headlineText.setText((String) msg.obj);
-				break;
-			case CloplayerService.MSG_UPDATE_DETAIL:
-				detailText.setText((String) msg.obj);
-				break;
-			case CloplayerService.MSG_UPDATE_PLAY_PROGRESS:
-				progress.setProgress(msg.arg1);
-				if (progress.getProgress() == progress.getSecondaryProgress() && progress.getProgress() != progress.getMax()) {
-					progDailog.show();
-				}
-				break;
-			case CloplayerService.MSG_UPDATE_DOWNLOAD_PROGRESS:
-				progress.setSecondaryProgress(msg.arg1);
-				progDailog.hide();
-				break;
-			case CloplayerService.MSG_UPDATE_PROGRESS_MAX:
-				progress.setMax(msg.arg1);
+			case CloplayerService.MSG_UPDATE_STORY:
+				Story story = CloplayerService.getInstance().datasource.getStory(msg.arg1);
+				if (story.getId() == CloplayerService.getInstance().currentStory.getId())
+					updateUI(false, story);
 				break;
 			default:
 				super.handleMessage(msg);
 			}
+		}
+	}
+
+	public void updateUI(boolean first, Story story) {
+		sourceUrlText.setText(story.getDomain());
+		headlineText.setText(story.getHeadline());
+		String text = globalSettings.getString(story.getId() + "." + story.getPlayProgress() + ".text", "");
+		detailText.setText(story.getDetail(), TextView.BufferType.SPANNABLE);
+
+		if (text != null && text.length() != 0 && story.getDetail().indexOf(text) != -1) {
+			Spannable WordtoSpan = (Spannable) detailText.getText();
+			WordtoSpan.setSpan(new ForegroundColorSpan(Color.BLACK), story.getDetail().indexOf(text), story.getDetail().indexOf(text) + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			detailText.setText(WordtoSpan);
+		}
+
+		progress.setMax(story.getItemCount());
+		progress.setProgress(story.getPlayProgress());
+		progress.setSecondaryProgress(story.getDownloadProgress());
+
+		if (progress.getProgress() == progress.getSecondaryProgress() && progress.getProgress() != progress.getMax()) {
+			progDailog.show();
+		} else {
+			progDailog.hide();
+		}
+
+		if (!first && progress.getProgress() == progress.getMax()) {
+			finish();
+		}
+		
+		Button unpauseButton = (Button) findViewById(R.id.unpause_button);
+		Button pauseButton = (Button) findViewById(R.id.pause_button);
+		if(story.isPlaying()) {			
+			unpauseButton.setEnabled(false);			
+			pauseButton.setEnabled(true);
+		} else {
+			unpauseButton.setEnabled(true);			
+			pauseButton.setEnabled(false);
 		}
 	}
 }

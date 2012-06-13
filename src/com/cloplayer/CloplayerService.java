@@ -1,27 +1,21 @@
 package com.cloplayer;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
 
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.cloplayer.http.PlayTask;
-import com.cloplayer.story.CloplayerStory;
-import com.cloplayer.utils.ServerConstants;
+import com.cloplayer.sqlite.Story;
+import com.cloplayer.sqlite.StoryDataSource;
 
 public class CloplayerService extends Service {
 
@@ -35,40 +29,34 @@ public class CloplayerService extends Service {
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_PLAY_SOURCE = 3;
-	public static final int MSG_STOP_PLAYING = 4;
-	public static final int MSG_PAUSE_PLAYING = 5;
-	public static final int MSG_UNPAUSE_PLAYING = 6;
-	public static final int MSG_STORE_SOURCE = 7;
+	public static final int MSG_PAUSE_PLAYING = 4;
+	public static final int MSG_UNPAUSE_PLAYING = 5;
+	public static final int MSG_STORE_SOURCE = 6;
 
 	public static final int MSG_NEXT1 = 11;
 	public static final int MSG_NEXT5 = 12;
 	public static final int MSG_BACK1 = 13;
 	public static final int MSG_BACK5 = 14;
 
-	public static final int MSG_UPDATE_SOURCE_URL = 51;
-	public static final int MSG_UPDATE_HEADLINE = 52;
-	public static final int MSG_UPDATE_DETAIL = 53;
-	public static final int MSG_UPDATE_PROGRESS_MAX = 54;
-	public static final int MSG_UPDATE_PLAY_PROGRESS = 55;
-	public static final int MSG_UPDATE_DOWNLOAD_PROGRESS = 56;
+	public static final int MSG_UPDATE_STORY = 51;
 
 	private static CloplayerService instance;
 	public boolean isPaused = false;
-	public LinkedList<PlayItem> playQueue;
-	public PlayTask playTask;
-	
-	public CloplayerStory currentStory;
 
-	public static CloplayerService getInstace() {
+	public StoryDataSource datasource = new StoryDataSource(this);
+	public Story currentStory;
+
+	public HashMap<String, byte[]> cache = new HashMap<String, byte[]>();
+
+	public static CloplayerService getInstance() {
 		return instance;
 	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
 		instance = this;
-
+		datasource.open();
 		isRunning = true;
 		Log.i("CloplayerService", "Service Started.");
 	}
@@ -99,9 +87,6 @@ public class CloplayerService extends Service {
 			case MSG_PLAY_SOURCE:
 				playSource(msg);
 				break;
-			case MSG_STOP_PLAYING:
-				stopSelf();
-				break;
 			case MSG_PAUSE_PLAYING:
 				pauseReading();
 				break;
@@ -109,28 +94,16 @@ public class CloplayerService extends Service {
 				unpauseReading();
 				break;
 			case MSG_NEXT1:
-				int currentLine1 = playTask.getCurrentLine();
-				playTask.stop();
-				playTask = new PlayTask(currentLine1 + 1);
-				playTask.start();
+				currentStory.scroll(1);
 				break;
 			case MSG_NEXT5:
-				int currentLine2 = playTask.getCurrentLine();
-				playTask.stop();
-				playTask = new PlayTask(currentLine2 + 3);
-				playTask.start();
+				currentStory.scroll(5);
 				break;
 			case MSG_BACK1:
-				int currentLine3 = playTask.getCurrentLine();
-				playTask.stop();
-				playTask = new PlayTask(currentLine3 - 1);
-				playTask.start();
+				currentStory.scroll(-1);
 				break;
 			case MSG_BACK5:
-				int currentLine4 = playTask.getCurrentLine();
-				playTask.stop();
-				playTask = new PlayTask(currentLine4 - 3);
-				playTask.start();
+				currentStory.scroll(-5);
 				break;
 			default:
 				super.handleMessage(msg);
@@ -144,16 +117,21 @@ public class CloplayerService extends Service {
 
 		String sourceUrl = (String) msg.obj;
 
-		stopReading();
+		if (currentStory == null || !currentStory.getUrl().equals(sourceUrl)) {
+			stopReading();
+		}
 
-		playQueue = new LinkedList<PlayItem>();
-		playTask = new PlayTask();
-		playTask.start();
+		currentStory = datasource.findStory(sourceUrl);
+		if (currentStory == null) {
+			currentStory = datasource.addStory(sourceUrl);
+		}
 
-		CloplayerService.getInstace().showNotification("Loading", "Loading");
+		if (currentStory.getState() < Story.STATE_DOWNLOADED) {
+			currentStory.download();
+		}
 
-		currentStory = new CloplayerStory(sourceUrl);
-		currentStory.loadAndPlay();
+		currentStory.play();
+
 	}
 
 	private void storeSource(Message msg) {
@@ -161,48 +139,32 @@ public class CloplayerService extends Service {
 		isPaused = false;
 
 		String sourceUrl = (String) msg.obj;
-		
-		stopReading();
 
-		playQueue = new LinkedList<PlayItem>();
-		playTask = new PlayTask();
-		playTask.start();
+		Story story = datasource.findStory(sourceUrl);
+		if (story == null) {
+			story = datasource.addStory(sourceUrl);
+		}
 
-		CloplayerService.getInstace().showNotification("Loading", "Loading");
+		if (story.getState() < Story.STATE_DOWNLOADED) {
+			story.download();
+		}
 
-		currentStory = new CloplayerStory(sourceUrl);
-		currentStory.loadAndStore();
 	}
 
 	private void stopReading() {
-
-		if (playTask != null)
-			playTask.stop();
-		playTask = null;
-		playQueue = null;
-
-		SharedPreferences globalSettings = getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
-		SharedPreferences.Editor editor = globalSettings.edit();
-		editor.remove("nowPlayingSource");
-		editor.remove("nowPlayingHeadline");
-		editor.remove("nowPlayingDetail");
-		editor.remove("nowPlayingProgressMax");
-		editor.remove("nowPlayingPlayProgress");
-		editor.remove("nowPlayingDownloadProgress");
-		editor.commit();
-
+		if (currentStory != null)
+			currentStory.stopPlaying();
 	}
 
 	private void pauseReading() {
-		playTask.stop();
+		if (currentStory != null)
+			currentStory.stopPlaying();
 		isPaused = true;
 	}
 
 	private void unpauseReading() {
 		if (isPaused) {
-			int currentLine = playTask.getCurrentLine();
-			playTask = new PlayTask(currentLine);
-			playTask.start();
+			currentStory.resume();
 			isPaused = false;
 		}
 
@@ -245,6 +207,8 @@ public class CloplayerService extends Service {
 		super.onDestroy();
 
 		stopReading();
+
+		datasource.close();
 
 		isRunning = false;
 		Log.i("CloplayerService", "Service Stopped.");

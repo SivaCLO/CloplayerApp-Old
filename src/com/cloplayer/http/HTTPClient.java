@@ -2,7 +2,6 @@ package com.cloplayer.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -11,8 +10,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.os.AsyncTask;
 import android.util.Log;

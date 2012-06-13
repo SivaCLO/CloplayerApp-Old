@@ -1,13 +1,5 @@
 package com.cloplayer;
 
-import java.util.HashMap;
-import java.util.Locale;
-
-import android.content.Context;
-import android.media.AudioManager;
-import android.speech.tts.TextToSpeech;
-
-import com.cloplayer.story.CloplayerStory;
 
 public class TTSManager { //implements TextToSpeech.OnUtteranceCompletedListener, TextToSpeech.OnInitListener {
 

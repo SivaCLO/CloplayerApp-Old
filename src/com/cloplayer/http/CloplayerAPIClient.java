@@ -2,7 +2,6 @@ package com.cloplayer.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

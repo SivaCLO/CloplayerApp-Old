@@ -12,8 +12,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +42,8 @@ public class PlayLaterActivity extends Activity {
 			extra_text = extras.getString(Intent.EXTRA_TEXT);
 
 		resumeService();
+		
+		Toast.makeText(this, "Added to Cloplayer", Toast.LENGTH_SHORT).show();
 	}
 
 	private void resumeService() {
