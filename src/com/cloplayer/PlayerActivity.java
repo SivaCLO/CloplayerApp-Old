@@ -70,7 +70,7 @@ public class PlayerActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				Intent intentToGo = new Intent();
-				intentToGo.setClass(PlayerActivity.this, HomeActivity.class);
+				intentToGo.setClass(PlayerActivity.this, LibraryActivity.class);
 				startActivity(intentToGo);
 				finish();
 			}

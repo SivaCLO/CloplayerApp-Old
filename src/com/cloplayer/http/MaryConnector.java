@@ -1,4 +1,4 @@
-package com.cloplayer;
+package com.cloplayer.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

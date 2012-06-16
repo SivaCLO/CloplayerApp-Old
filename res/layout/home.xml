@@ -4,6 +4,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
+    <Button
+        android:id="@+id/refresh_articles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Refresh" >
+    </Button>
+
     <TextView
         android:id="@+id/recently_played"
         android:layout_width="wrap_content"

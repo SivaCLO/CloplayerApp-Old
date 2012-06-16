@@ -10,6 +10,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class StoryDataSource {
 
@@ -32,6 +33,8 @@ public class StoryDataSource {
 
 	public Story addStory(String url) {
 
+		Log.e("CloplayerService", "Adding Article :" + url);
+
 		ContentValues values = new ContentValues();
 		values.put(MySQLiteHelper.COLUMN_URL, url);
 		values.put(MySQLiteHelper.COLUMN_ITEM_COUNT, 0);
@@ -44,6 +47,9 @@ public class StoryDataSource {
 		cursor.moveToFirst();
 		Story newStory = cursorToStory(cursor, StoryFactory.getInstance().getStory(cursor.getLong(0)));
 		cursor.close();
+		
+		CloplayerService.getInstance().sendIntMessageToUI(CloplayerService.MSG_ADD_STORY, (int) newStory.getId());
+
 		return newStory;
 	}
 

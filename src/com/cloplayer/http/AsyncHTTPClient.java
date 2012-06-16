@@ -14,11 +14,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public abstract class HTTPClient extends AsyncTask<String, String, String> {
+public abstract class AsyncHTTPClient extends AsyncTask<String, String, String> {
 
 	protected String url;
 
-	public HTTPClient(String url) {
+	public AsyncHTTPClient(String url) {
 		this.url = url;
 	}
 

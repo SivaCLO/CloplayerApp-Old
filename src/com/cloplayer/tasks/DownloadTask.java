@@ -1,4 +1,4 @@
-package com.cloplayer.http;
+package com.cloplayer.tasks;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -15,7 +15,8 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.cloplayer.CloplayerService;
-import com.cloplayer.MaryConnector;
+import com.cloplayer.http.MaryConnector;
+import com.cloplayer.http.SyncHTTPClient;
 import com.cloplayer.sqlite.MySQLiteHelper;
 import com.cloplayer.sqlite.Story;
 import com.cloplayer.utils.ServerConstants;
@@ -31,6 +32,13 @@ public class DownloadTask extends AsyncTask<String, String, String> {
 	@Override
 	protected String doInBackground(String... data) {
 
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		Log.e("DownloadTask", "Story State : " + story.getState());
 
 		if (story.getState() < Story.STATE_BOOTSTRAPPED) {
@@ -47,11 +55,11 @@ public class DownloadTask extends AsyncTask<String, String, String> {
 
 		Log.e("DownloadTask", "Starting Bootstrap");
 
-		SyncHTTPClient client = new SyncHTTPClient("http://api.cloplayer.com/api/parse?url=" + story.getUrl()) {
+		SyncHTTPClient client = new SyncHTTPClient("http://api.cloplayer.com/api/add?userId=4fd920bee4b0d59877649ed6&url=" + story.getUrl()) {
 
 			public void onSuccessResponse(String response) {
 				try {
-
+					
 					JSONObject content = new JSONObject(response);
 
 					ContentValues values = new ContentValues();

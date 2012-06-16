@@ -3,6 +3,10 @@ package com.cloplayer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -14,6 +18,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.cloplayer.http.AsyncHTTPClient;
 import com.cloplayer.sqlite.Story;
 import com.cloplayer.sqlite.StoryDataSource;
 
@@ -39,6 +44,10 @@ public class CloplayerService extends Service {
 	public static final int MSG_BACK5 = 14;
 
 	public static final int MSG_UPDATE_STORY = 51;
+	public static final int MSG_ADD_STORY = 52;
+
+	public static final int MSG_REFRESH_ARTICLES = 71;
+	public static final int MSG_REFRESH_ARTICLES_COMPLETE = 72;
 
 	private static CloplayerService instance;
 	public boolean isPaused = false;
@@ -87,6 +96,9 @@ public class CloplayerService extends Service {
 			case MSG_PLAY_SOURCE:
 				playSource(msg);
 				break;
+			case MSG_REFRESH_ARTICLES:
+				refreshArticles();
+				break;
 			case MSG_PAUSE_PLAYING:
 				pauseReading();
 				break;
@@ -111,11 +123,59 @@ public class CloplayerService extends Service {
 		}
 	}
 
+	public String cleanUrl(String url) {
+
+		String result = url;
+
+		int index = url.indexOf('?');
+
+		if (index >= 0)
+			result = url.substring(0, index);
+
+		index = result.indexOf('&');
+
+		if (index >= 0)
+			result = result.substring(0, index);
+
+		return result;
+	}
+
+	private void refreshArticles() {
+
+		isPaused = false;
+
+		AsyncHTTPClient client = new AsyncHTTPClient("http://api.cloplayer.com/api/list?userId=4fd920bee4b0d59877649ed6") {
+
+			public void onSuccessResponse(String response) {
+				try {
+
+					JSONObject content = new JSONObject(response);
+					JSONArray articles = content.getJSONArray("articles");
+
+					for (int i = 0; i < articles.length(); i++) {
+						downloadSource(cleanUrl(articles.getString(i)));						
+					}
+
+					CloplayerService.getInstance().sendEmptyMessageToUI(CloplayerService.MSG_REFRESH_ARTICLES_COMPLETE);
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			public void onErrorResponse(Exception e) {
+				Log.e("LoginActivity", "Error", e);
+			}
+		};
+
+		client.execute();
+	}
+
 	private void playSource(Message msg) {
 
 		isPaused = false;
 
-		String sourceUrl = (String) msg.obj;
+		String sourceUrl = cleanUrl((String) msg.obj);
 
 		if (currentStory == null || !currentStory.getUrl().equals(sourceUrl)) {
 			stopReading();
@@ -135,10 +195,12 @@ public class CloplayerService extends Service {
 	}
 
 	private void storeSource(Message msg) {
-
 		isPaused = false;
+		String sourceUrl = cleanUrl((String) msg.obj);
+		downloadSource(sourceUrl);
+	}
 
-		String sourceUrl = (String) msg.obj;
+	private void downloadSource(String sourceUrl) {
 
 		Story story = datasource.findStory(sourceUrl);
 		if (story == null) {
@@ -148,7 +210,6 @@ public class CloplayerService extends Service {
 		if (story.getState() < Story.STATE_DOWNLOADED) {
 			story.download();
 		}
-
 	}
 
 	private void stopReading() {
@@ -168,6 +229,16 @@ public class CloplayerService extends Service {
 			isPaused = false;
 		}
 
+	}
+
+	public void sendEmptyMessageToUI(int messageId) {
+		for (int i = mClients.size() - 1; i >= 0; i--) {
+			try {
+				mClients.get(i).send(Message.obtain(null, messageId));
+			} catch (RemoteException e) {
+				mClients.remove(i);
+			}
+		}
 	}
 
 	public void sendIntMessageToUI(int messageId, int value) {

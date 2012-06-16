@@ -1,4 +1,4 @@
-package com.cloplayer.http;
+package com.cloplayer.tasks;
 
 import java.io.DataInputStream;
 import java.io.File;

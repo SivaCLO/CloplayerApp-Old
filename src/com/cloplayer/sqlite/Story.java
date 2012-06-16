@@ -1,7 +1,7 @@
 package com.cloplayer.sqlite;
 
-import com.cloplayer.http.DownloadTask;
-import com.cloplayer.http.PlayTask;
+import com.cloplayer.tasks.DownloadTask;
+import com.cloplayer.tasks.PlayTask;
 
 public class Story {
 	private long id;
