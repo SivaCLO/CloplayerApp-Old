@@ -15,6 +15,8 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cloplayer.utils.ServerConstants;
+
 public class PlayNowActivity extends Activity {
 
 	Messenger mService = null;
@@ -25,7 +27,7 @@ public class PlayNowActivity extends Activity {
 	TextView sourceUrlText;
 	TextView headlineText;
 	TextView detailText;
-	
+
 	String extra_text = "http://cloplayer.com";
 
 	@Override
@@ -37,13 +39,12 @@ public class PlayNowActivity extends Activity {
 		Intent intent = getIntent();
 
 		Bundle extras = intent.getExtras();
-		
+
 		if (extras != null)
 			extra_text = extras.getString(Intent.EXTRA_TEXT);
 
 		resumeService();
-		
-		Toast.makeText(this, "Will be played shortly...", Toast.LENGTH_SHORT).show();
+
 	}
 
 	private void resumeService() {
@@ -61,13 +62,33 @@ public class PlayNowActivity extends Activity {
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mService = new Messenger(service);
-			
-			playSource(extra_text); 
 
-			/*Intent intentToGo = new Intent();
-			intentToGo.setClass(AddToCloplayerActivity.this, PlayerActivity.class);
-			startActivity(intentToGo);*/
-			finish();
+			SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
+			String userId = globalSettings.getString("userId", null);
+
+			Log.e("PlayNowActivity", "UserId : " + userId);
+
+			if (userId == null) {
+				Log.e("PlayNowActivity", "User not logged in");
+				Intent intentToGo = new Intent();
+				intentToGo.setClass(PlayNowActivity.this, HomeActivity.class);
+				startActivity(intentToGo);
+				Toast.makeText(PlayNowActivity.this, "Please login to cloplayer and try again", Toast.LENGTH_SHORT).show();
+				finish();
+			} else {
+				Log.e("PlayNowActivity", "User logged in as : " + userId);
+				
+				Toast.makeText(PlayNowActivity.this, "Will be played shortly...", Toast.LENGTH_SHORT).show();
+
+				playSource(extra_text);
+
+				/*
+				 * Intent intentToGo = new Intent();
+				 * intentToGo.setClass(AddToCloplayerActivity.this,
+				 * PlayerActivity.class); startActivity(intentToGo);
+				 */
+				finish();
+			}
 		}
 
 		public void onServiceDisconnected(ComponentName className) {

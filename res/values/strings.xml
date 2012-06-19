@@ -26,5 +26,9 @@
     </string-array>
 
     <string name="cloplayer_notification">Cloplayer</string>
+
+    <string name="username">User Name</string>
+
+    <string name="password">Password</string>
     
 </resources>

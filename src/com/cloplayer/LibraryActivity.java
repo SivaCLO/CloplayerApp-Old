@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -25,10 +24,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cloplayer.sqlite.Story;
+import com.cloplayer.utils.ServerConstants;
 
 public class LibraryActivity extends Activity {
 
@@ -36,6 +38,7 @@ public class LibraryActivity extends Activity {
 
 	Messenger mService = null;
 	boolean mIsBound;
+	boolean mIsFirstTime = false;
 
 	SharedPreferences globalSettings;
 
@@ -45,15 +48,17 @@ public class LibraryActivity extends Activity {
 
 	LayoutInflater inflater;
 
+	int storyCategory = CloplayerService.CATEGORY_UNREAD;
+
 	HashMap<Integer, View> storyLocations;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.home);
+		setContentView(R.layout.library);
 
-		Button refreshButton = (Button) findViewById(R.id.refresh_articles);
+		TextView refreshButton = (TextView) findViewById(R.id.refresh_articles);
 		refreshButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -61,17 +66,56 @@ public class LibraryActivity extends Activity {
 			}
 		});
 
+		final ImageButton newButton = (ImageButton) findViewById(R.id.new_button);
+		newButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				storyCategory = CloplayerService.CATEGORY_UNREAD;
+				updateUI();
+			}
+		});
+
+		final ImageButton favButton = (ImageButton) findViewById(R.id.archive_button);
+		favButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				storyCategory = CloplayerService.CATEGORY_READ;
+				updateUI();
+			}
+		});
+
+		final ImageButton playAllButton = (ImageButton) findViewById(R.id.play_all);
+		playAllButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				sendIntMessageToService(CloplayerService.MSG_PLAY_ALL, storyCategory);
+			}
+		});
+
 		inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		resumeService();
 	}
 
 	public void onResume() {
 		super.onResume();
-		resumeService();
-	}
 
-	public void onPause() {
-		super.onPause();
-		doUnbindService();
+		if (mIsBound) {
+			updateUI();
+			if (mIsFirstTime) {
+
+				SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
+				String userId = globalSettings.getString("userId", null);
+
+				Log.e("LibraryActivity", "UserId : " + userId);
+
+				if (userId != null) {
+					triggerRefresh();
+					mIsFirstTime = false;
+				}
+			}
+		}
+
 	}
 
 	private void resumeService() {
@@ -88,11 +132,26 @@ public class LibraryActivity extends Activity {
 
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
+			mIsBound = true;
 			mService = new Messenger(service);
 			sendEmptyMessageToService(CloplayerService.MSG_REGISTER_CLIENT);
-			updateUI();
 
-			triggerRefresh();
+			SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
+			String userId = globalSettings.getString("userId", null);
+
+			Log.e("LibraryActivity", "UserId : " + userId);
+
+			if (userId == null) {
+				mIsFirstTime = true;
+				Log.e("LibraryActivity", "User not logged in");
+				Intent intentToGo = new Intent();
+				intentToGo.setClass(LibraryActivity.this, HomeActivity.class);
+				startActivity(intentToGo);
+			} else {
+				Log.e("LibraryActivity", "User logged in as : " + userId);
+				updateUI();
+				triggerRefresh();
+			}
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -135,7 +194,6 @@ public class LibraryActivity extends Activity {
 
 	void doBindService() {
 		bindService(new Intent(this, CloplayerService.class), mConnection, Context.BIND_AUTO_CREATE);
-		mIsBound = true;
 	}
 
 	void doUnbindService() {
@@ -160,13 +218,6 @@ public class LibraryActivity extends Activity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case CloplayerService.MSG_REFRESH_ARTICLES_COMPLETE:
-				resetRefreshButton();
-				break;
-			case CloplayerService.MSG_UPDATE_STORY:
-				updateStory(msg.arg1);
-				break;
-			case CloplayerService.MSG_ADD_STORY:
-				// should add dynamically instead of refreshing page.
 				updateUI();
 				break;
 			default:
@@ -175,28 +226,46 @@ public class LibraryActivity extends Activity {
 		}
 	}
 
-	public void updateStory(int id) {
-		View rowView = storyLocations.get(id);
-		Story story = CloplayerService.getInstance().datasource.getStory(id);
-
-		if (rowView != null && story != null)
-			paintStory(rowView, story);
-		else
-			Log.e("Home", "View not Found : " + id);			
-	}
-
 	public void paintStory(View view, Story story) {
-		
-		//This doesn't update the UI. Need to change.
-		
 		TextView headlineView = (TextView) view.findViewById(R.id.headline);
-		headlineView.setText(story.getPlayProgress() + " > " + story.getHeadline());
+		headlineView.setText(story.getHeadline());
 		TextView sourceView = (TextView) view.findViewById(R.id.source);
 		sourceView.setText(story.getDomain());
 	}
 
 	public void updateUI() {
-		final List<Story> values = CloplayerService.getInstance().datasource.getAllStories();
+
+		SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
+		int storyId = globalSettings.getInt("nowPlaying", -1);
+		if (storyId != -1) {
+			Story story = CloplayerService.getInstance().datasource.getStory(storyId);
+			((TextView) findViewById(R.id.now_playing_text)).setText(story.getHeadline());
+			((LinearLayout) findViewById(R.id.now_playing)).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					Intent intentToGo = new Intent();
+					intentToGo.setClass(LibraryActivity.this, PlayerActivity.class);
+					startActivity(intentToGo);
+					finish();
+				}
+			});
+			((LinearLayout) findViewById(R.id.now_playing)).setVisibility(View.VISIBLE);
+		} else {
+			((LinearLayout) findViewById(R.id.now_playing)).setVisibility(View.GONE);
+		}
+
+		final List<Story> values;
+
+		if (storyCategory == CloplayerService.CATEGORY_UNREAD) {
+			((TextView) findViewById(R.id.title)).setText("NEW");
+			values = CloplayerService.getInstance().datasource.getUnplayedStories();
+			((ImageButton) findViewById(R.id.play_all)).setVisibility(View.VISIBLE);
+		} else {
+			((TextView) findViewById(R.id.title)).setText("ARCHIVES");
+			values = CloplayerService.getInstance().datasource.getplayedStories();
+			((ImageButton) findViewById(R.id.play_all)).setVisibility(View.GONE);
+		}
+
 		ListView lv = (ListView) findViewById(R.id.list);
 		storyLocations = new HashMap<Integer, View>();
 		lv.setAdapter(new ArrayAdapter<Story>(LibraryActivity.this, android.R.layout.simple_list_item_1, values) {
@@ -205,7 +274,7 @@ public class LibraryActivity extends Activity {
 			public View getView(int position, View convertView, ViewGroup parent) {
 
 				Story story = getItem(position);
-				View rowView = inflater.inflate(R.layout.current_story, parent, false);
+				View rowView = inflater.inflate(R.layout.story, parent, false);
 
 				paintStory(rowView, story);
 
@@ -226,22 +295,31 @@ public class LibraryActivity extends Activity {
 				Intent intentToGo = new Intent();
 				intentToGo.setClass(LibraryActivity.this, PlayerActivity.class);
 				startActivity(intentToGo);
+				finish();
 			}
 		});
 
-		resetRefreshButton();
+		boolean refreshing = globalSettings.getBoolean("refreshing", false);
+		if (refreshing)
+			setRefreshButton();
+		else
+			resetRefreshButton();
 	}
 
 	public void resetRefreshButton() {
-		final Button refreshButton = (Button) findViewById(R.id.refresh_articles);
+		final TextView refreshButton = (TextView) findViewById(R.id.refresh_articles);
 		refreshButton.setEnabled(true);
 		refreshButton.setText("Refresh");
 	}
 
-	public void triggerRefresh() {
-		final Button refreshButton = (Button) findViewById(R.id.refresh_articles);
+	public void setRefreshButton() {
+		final TextView refreshButton = (TextView) findViewById(R.id.refresh_articles);
 		refreshButton.setEnabled(false);
 		refreshButton.setText("Refreshing");
+	}
+
+	public void triggerRefresh() {
+		setRefreshButton();
 		sendEmptyMessageToService(CloplayerService.MSG_REFRESH_ARTICLES);
 	}
 

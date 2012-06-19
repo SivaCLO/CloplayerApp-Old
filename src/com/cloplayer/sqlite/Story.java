@@ -1,5 +1,7 @@
 package com.cloplayer.sqlite;
 
+import com.cloplayer.CloplayerService;
+import com.cloplayer.tasks.BootstrapTask;
 import com.cloplayer.tasks.DownloadTask;
 import com.cloplayer.tasks.PlayTask;
 
@@ -21,7 +23,15 @@ public class Story {
 
 	DownloadTask downloadTask;
 	public PlayTask playTask;
+	public BootstrapTask bootstrapTask;
 
+	public void bootstrap() {
+		if (bootstrapTask == null) {
+			bootstrapTask = new BootstrapTask(this);
+			bootstrapTask.execute();
+		}
+	}
+	
 	public void download() {
 		if (downloadTask == null) {
 			downloadTask = new DownloadTask(this);
@@ -47,6 +57,7 @@ public class Story {
 		if (playTask != null) {
 			playTask.stop(true);
 			playTask = null;
+			CloplayerService.getInstance().sendIntMessageToUI(CloplayerService.MSG_UPDATE_STORY, (int) getId());
 		}
 	}
 	

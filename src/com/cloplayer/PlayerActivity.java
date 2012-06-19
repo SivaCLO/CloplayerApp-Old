@@ -16,7 +16,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.text.Spannable;
 import android.text.method.ScrollingMovementMethod;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +23,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -53,19 +53,20 @@ public class PlayerActivity extends Activity {
 		ViewGroup parent = (ViewGroup) findViewById(R.id.root);
 		LayoutInflater inflater = LayoutInflater.from(getBaseContext());
 
-		parent.addView(inflater.inflate(R.layout.logo, parent, false));
+		//parent.addView(inflater.inflate(R.layout.logo, parent, false));
 		parent.addView(inflater.inflate(R.layout.player, parent, false));
 
 		sourceUrlText = (TextView) findViewById(R.id.sourceUrl);
 		headlineText = (TextView) findViewById(R.id.headline);
-		detailText = (TextView) findViewById(R.id.detail);
-		progress = (ProgressBar) findViewById(R.id.progressBar);
+		progress = (ProgressBar) findViewById(R.id.progress_bar);
+		detailText = (TextView) findViewById(R.id.detail_text);
+		
 
 		detailText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
 		globalSettings = getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
 
-		Button stopButton = (Button) findViewById(R.id.stop_button);
+		ImageButton stopButton = (ImageButton) findViewById(R.id.stop_button);
 		stopButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -76,7 +77,7 @@ public class PlayerActivity extends Activity {
 			}
 		});
 
-		Button homeButton = (Button) findViewById(R.id.minimize_button);
+		ImageButton homeButton = (ImageButton) findViewById(R.id.minimize_button);
 		homeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -84,23 +85,15 @@ public class PlayerActivity extends Activity {
 			}
 		});
 
-		Button pauseButton = (Button) findViewById(R.id.pause_button);
-		pauseButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				sendEmptyMessageToService(CloplayerService.MSG_PAUSE_PLAYING);
-			}
-		});
-
-		Button unpauseButton = (Button) findViewById(R.id.unpause_button);
+		ImageButton unpauseButton = (ImageButton) findViewById(R.id.pause_button);
 		unpauseButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				sendEmptyMessageToService(CloplayerService.MSG_UNPAUSE_PLAYING);
+				sendEmptyMessageToService(CloplayerService.MSG_PAUSE_UNPAUSE_PLAYING);
 			}
 		});
 
-		Button next1Button = (Button) findViewById(R.id.next1_button);
+		ImageButton next1Button = (ImageButton) findViewById(R.id.next1_button);
 		next1Button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -108,7 +101,7 @@ public class PlayerActivity extends Activity {
 			}
 		});
 
-		Button next5Button = (Button) findViewById(R.id.next5_button);
+		ImageButton next5Button = (ImageButton) findViewById(R.id.next5_button);
 		next5Button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -116,7 +109,7 @@ public class PlayerActivity extends Activity {
 			}
 		});
 
-		Button back1Button = (Button) findViewById(R.id.back1_button);
+		ImageButton back1Button = (ImageButton) findViewById(R.id.back1_button);
 		back1Button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -124,7 +117,7 @@ public class PlayerActivity extends Activity {
 			}
 		});
 
-		Button back5Button = (Button) findViewById(R.id.back5_button);
+		ImageButton back5Button = (ImageButton) findViewById(R.id.back5_button);
 		back5Button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -266,14 +259,11 @@ public class PlayerActivity extends Activity {
 			finish();
 		}
 		
-		Button unpauseButton = (Button) findViewById(R.id.unpause_button);
-		Button pauseButton = (Button) findViewById(R.id.pause_button);
+		ImageButton pauseButton = (ImageButton) findViewById(R.id.pause_button);
 		if(story.isPlaying()) {			
-			unpauseButton.setEnabled(false);			
-			pauseButton.setEnabled(true);
+			pauseButton.setImageResource(R.drawable.pause);
 		} else {
-			unpauseButton.setEnabled(true);			
-			pauseButton.setEnabled(false);
+			pauseButton.setImageResource(R.drawable.play);
 		}
 	}
 }

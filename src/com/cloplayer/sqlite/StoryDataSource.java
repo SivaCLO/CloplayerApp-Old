@@ -103,6 +103,38 @@ public class StoryDataSource {
 		cursor.close();
 		return stories;
 	}
+	
+	public List<Story> getUnplayedStories() {
+		List<Story> stories = new ArrayList<Story>();
+
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_STORIES, allColumns, MySQLiteHelper.COLUMN_STATE + " < " + Story.STATE_PLAYED, null, null, null, null);
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Story story = cursorToStory(cursor, StoryFactory.getInstance().getStory(cursor.getLong(0)));
+			stories.add(story);
+			cursor.moveToNext();
+		}
+		// Make sure to close the cursor
+		cursor.close();
+		return stories;
+	}
+	
+	public List<Story> getplayedStories() {
+		List<Story> stories = new ArrayList<Story>();
+
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_STORIES, allColumns, MySQLiteHelper.COLUMN_STATE + " = " + Story.STATE_PLAYED, null, null, null, null);
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Story story = cursorToStory(cursor, StoryFactory.getInstance().getStory(cursor.getLong(0)));
+			stories.add(story);
+			cursor.moveToNext();
+		}
+		// Make sure to close the cursor
+		cursor.close();
+		return stories;
+	}
 
 	private Story cursorToStory(Cursor cursor, Story story) {
 		story.setId(cursor.getLong(0));

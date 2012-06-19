@@ -5,9 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.StringTokenizer;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -16,7 +13,6 @@ import android.util.Log;
 
 import com.cloplayer.CloplayerService;
 import com.cloplayer.http.MaryConnector;
-import com.cloplayer.http.SyncHTTPClient;
 import com.cloplayer.sqlite.MySQLiteHelper;
 import com.cloplayer.sqlite.Story;
 import com.cloplayer.utils.ServerConstants;
@@ -32,60 +28,14 @@ public class DownloadTask extends AsyncTask<String, String, String> {
 	@Override
 	protected String doInBackground(String... data) {
 
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		Log.e("DownloadTask", "Story State : " + story.getState());
 
-		if (story.getState() < Story.STATE_BOOTSTRAPPED) {
-			startBootstrap();
-		} else if (story.getState() < Story.STATE_DOWNLOADED) {
+		if (story.getState() < Story.STATE_DOWNLOADED) {
 			startAudioDownload();
 		}		
 
 		return "";
 
-	}
-
-	public void startBootstrap() {
-
-		Log.e("DownloadTask", "Starting Bootstrap");
-
-		SyncHTTPClient client = new SyncHTTPClient("http://api.cloplayer.com/api/add?userId=4fd920bee4b0d59877649ed6&url=" + story.getUrl()) {
-
-			public void onSuccessResponse(String response) {
-				try {
-					
-					JSONObject content = new JSONObject(response);
-
-					ContentValues values = new ContentValues();
-					values.put(MySQLiteHelper.COLUMN_HEADLINE, content.getString("title"));
-					values.put(MySQLiteHelper.COLUMN_DETAIL, content.getString("cleanedArticleText"));
-					values.put(MySQLiteHelper.COLUMN_DOMAIN, content.getString("domain"));
-					values.put(MySQLiteHelper.COLUMN_STATE, Story.STATE_BOOTSTRAPPED);
-					CloplayerService.getInstance().datasource.updateStory(story, values);
-
-					// CloplayerService.getInstance().showNotification("Downloading : "
-					// + story.getHeadline(), "Downloading : " +
-					// story.getHeadline());
-
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-
-			public void onErrorResponse(Exception e) {
-				Log.e("LoginActivity", "Error", e);
-			}
-		};
-		
-		client.execute();
-		
-		startAudioDownload();
 	}
 
 	public void startAudioDownload() {

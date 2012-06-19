@@ -4,119 +4,161 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical|center_horizontal"
-    android:layout_marginBottom="5dp"
-    android:layout_marginTop="5dp"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/sourceUrl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Loading" />
-
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/buttonsLayout"
+        android:id="@+id/linearLayout2"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal|center"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp" >
+        android:layout_height="50dp"
+        android:layout_gravity="top"
+        android:background="@color/clogrey1"
+        android:baselineAligned="true" >
 
-        <Button
-            android:id="@+id/pause_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Pause" >
-        </Button>
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="33dp"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="5sp"
+            android:src="@drawable/logo" />
 
-        <Button
-            android:id="@+id/unpause_button"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Play" >
-        </Button>
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5sp"
+            android:text="Now Playing"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/clowhite" />
 
-        <Button
-            android:id="@+id/minimize_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Minimize" >
-        </Button>
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="5sp"
+            android:baselineAligned="false"
+            android:gravity="right"
+            android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/stop_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Library" >
-        </Button>
+            <ImageButton
+                android:id="@+id/stop_button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@drawable/toolbar_buttons"
+                android:paddingLeft="5sp"
+                android:paddingRight="5sp"
+                android:src="@drawable/three_lines" />
+
+            <ImageButton
+                android:id="@+id/minimize_button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@drawable/toolbar_buttons"
+                android:paddingLeft="5sp"
+                android:paddingRight="5sp"
+                android:src="@drawable/up_arrow" />
+
+        </LinearLayout>
     </LinearLayout>
-    
+
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/buttonsLayout"
+        android:id="@+id/retryPage"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal|center"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp" >
+        android:layout_height="0dip"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="10sp"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp" >
 
-        <Button
-            android:id="@+id/next1_button"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/headline"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Next" >
-        </Button>
+            android:text="Loading"
+            android:textSize="25sp" />
 
-        <Button
-            android:id="@+id/next5_button"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/sourceUrl"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Next (3)" >
-        </Button>
+            android:layout_gravity="right"
+            android:text="Loading" />
 
-        <Button
-            android:id="@+id/back1_button"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/detail_text"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Back" >
-        </Button>
-
-        <Button
-            android:id="@+id/back5_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Back (3)" >
-        </Button>
+            android:paddingTop="5sp"
+            android:scrollbars="vertical"
+            android:text="Loading"
+            android:textColor="@color/clogrey" />
     </LinearLayout>
 
     <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/headline"
+        android:id="@+id/progress_bar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Loading"
-        android:textSize="25sp" />
+        android:maxHeight="5dip"
+        android:minHeight="5dip"
+        android:progressDrawable="@drawable/greenprogress" />
 
-    <TextView
-        android:id="@+id/detail"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:textColor="@color/clogrey"
-        android:text="Loading" />
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@color/clogrey"
+        android:baselineAligned="false" >
+
+        <ImageButton
+            android:id="@+id/back5_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/minus3"
+            android:text="-3" />
+
+        <ImageButton
+            android:id="@+id/back1_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/minus1"
+            android:text="-1" />
+
+        <ImageButton
+            android:id="@+id/pause_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/pause"
+            android:text="Play" />
+
+        <ImageButton
+            android:id="@+id/next1_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/plus1"
+            android:text="+1" />
+
+        <ImageButton
+            android:id="@+id/next5_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/plus3"
+            android:text="+3" />
+    </LinearLayout>
 
 </LinearLayout>

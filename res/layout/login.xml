@@ -1,36 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="5dp"
-    android:layout_marginTop="5dp" 
-    android:layout_gravity="center_vertical|center_horizontal"
-    android:orientation="vertical"
-    android:id="@+id/retryPage" >
+    android:layout_height="fill_parent"
+    android:background="@color/clogrey1"
+    android:gravity="center_vertical"
+    android:orientation="vertical" >
 
-    <TextView android:id="@+id/loginText"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="Please enter your email and password. If this is the first time, your account will be created automatically."/>
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/banner" />
 
     <EditText
-        android:id="@+id/login_email"
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:hint="Email" />	
-        
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginTop="10dp"
+        android:hint="@string/username" >
+
+        <requestFocus />
+    </EditText>
+
     <EditText
-        android:id="@+id/login_password"
+        android:id="@+id/password"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:hint="Password"
-        android:inputType="textPassword" />
-    
- 	<Button
- 	    android:id="@+id/login"
-    	android:layout_height="wrap_content"
-     	android:layout_width="wrap_content"
-     	android:text="Login"
-     	android:layout_gravity="center_vertical|center_horizontal"/>
- 
-</LinearLayout>
+        android:layout_alignLeft="@+id/email"
+        android:layout_alignRight="@+id/email"
+        android:layout_below="@+id/email"
+        android:layout_marginTop="10dp"
+        android:hint="@string/password"
+        android:inputType="textPassword" >
+    </EditText>
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="Login" />
+
+</RelativeLayout>

@@ -11,6 +11,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -21,6 +22,7 @@ import android.util.Log;
 import com.cloplayer.http.AsyncHTTPClient;
 import com.cloplayer.sqlite.Story;
 import com.cloplayer.sqlite.StoryDataSource;
+import com.cloplayer.utils.ServerConstants;
 
 public class CloplayerService extends Service {
 
@@ -34,8 +36,8 @@ public class CloplayerService extends Service {
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	public static final int MSG_PLAY_SOURCE = 3;
-	public static final int MSG_PAUSE_PLAYING = 4;
-	public static final int MSG_UNPAUSE_PLAYING = 5;
+	public static final int MSG_PAUSE_UNPAUSE_PLAYING = 4;
+	public static final int MSG_PLAY_ALL = 5;
 	public static final int MSG_STORE_SOURCE = 6;
 
 	public static final int MSG_NEXT1 = 11;
@@ -48,6 +50,9 @@ public class CloplayerService extends Service {
 
 	public static final int MSG_REFRESH_ARTICLES = 71;
 	public static final int MSG_REFRESH_ARTICLES_COMPLETE = 72;
+	
+	public static final int CATEGORY_UNREAD = 0;
+	public static final int CATEGORY_READ = 1;
 
 	private static CloplayerService instance;
 	public boolean isPaused = false;
@@ -96,14 +101,14 @@ public class CloplayerService extends Service {
 			case MSG_PLAY_SOURCE:
 				playSource(msg);
 				break;
+			case MSG_PLAY_ALL:
+				Log.e("CloplayerService", "Play All request recieved for : " + msg.arg1);
+				break;
 			case MSG_REFRESH_ARTICLES:
 				refreshArticles();
 				break;
-			case MSG_PAUSE_PLAYING:
+			case MSG_PAUSE_UNPAUSE_PLAYING:
 				pauseReading();
-				break;
-			case MSG_UNPAUSE_PLAYING:
-				unpauseReading();
 				break;
 			case MSG_NEXT1:
 				currentStory.scroll(1);
@@ -142,9 +147,14 @@ public class CloplayerService extends Service {
 
 	private void refreshArticles() {
 
-		isPaused = false;
+		SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
+		final SharedPreferences.Editor editor = globalSettings.edit();
+		editor.putBoolean("refreshing", true);
+		editor.commit();
 
-		AsyncHTTPClient client = new AsyncHTTPClient("http://api.cloplayer.com/api/list?userId=4fd920bee4b0d59877649ed6") {
+		String userId = globalSettings.getString("userId", null);
+		
+		AsyncHTTPClient client = new AsyncHTTPClient("http://api.cloplayer.com/api/list?userId=" + userId) {
 
 			public void onSuccessResponse(String response) {
 				try {
@@ -153,8 +163,11 @@ public class CloplayerService extends Service {
 					JSONArray articles = content.getJSONArray("articles");
 
 					for (int i = 0; i < articles.length(); i++) {
-						downloadSource(cleanUrl(articles.getString(i)));						
+						downloadSource(cleanUrl(articles.getString(i)));
 					}
+
+					editor.putBoolean("refreshing", false);
+					editor.commit();
 
 					CloplayerService.getInstance().sendEmptyMessageToUI(CloplayerService.MSG_REFRESH_ARTICLES_COMPLETE);
 
@@ -186,11 +199,17 @@ public class CloplayerService extends Service {
 			currentStory = datasource.addStory(sourceUrl);
 		}
 
+		if (currentStory.getState() < Story.STATE_BOOTSTRAPPED) {
+			currentStory.bootstrap();
+		}
+
 		if (currentStory.getState() < Story.STATE_DOWNLOADED) {
 			currentStory.download();
 		}
 
 		currentStory.play();
+
+		refreshArticles();
 
 	}
 
@@ -198,6 +217,8 @@ public class CloplayerService extends Service {
 		isPaused = false;
 		String sourceUrl = cleanUrl((String) msg.obj);
 		downloadSource(sourceUrl);
+
+		refreshArticles();
 	}
 
 	private void downloadSource(String sourceUrl) {
@@ -205,6 +226,10 @@ public class CloplayerService extends Service {
 		Story story = datasource.findStory(sourceUrl);
 		if (story == null) {
 			story = datasource.addStory(sourceUrl);
+		}
+
+		if (story.getState() < Story.STATE_BOOTSTRAPPED) {
+			story.bootstrap();
 		}
 
 		if (story.getState() < Story.STATE_DOWNLOADED) {
@@ -218,15 +243,15 @@ public class CloplayerService extends Service {
 	}
 
 	private void pauseReading() {
-		if (currentStory != null)
-			currentStory.stopPlaying();
-		isPaused = true;
-	}
 
-	private void unpauseReading() {
-		if (isPaused) {
-			currentStory.resume();
-			isPaused = false;
+		if (currentStory != null) {
+			if (isPaused) {
+				currentStory.resume();
+				isPaused = false;
+			} else {
+				currentStory.stopPlaying();
+				isPaused = true;
+			}
 		}
 
 	}

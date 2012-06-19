@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cloblue">#237abf</color>    
+    <color name="cloblue">#237abf</color>
+    <color name="cloblue1">#7bbef1</color>    
     <color name="clogrey">#CCCCCC</color>
+    <color name="clogrey1">#333333</color>
+    <color name="clowhite">#FFFFFF</color>
 </resources>

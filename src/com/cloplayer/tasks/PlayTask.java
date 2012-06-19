@@ -126,16 +126,12 @@ public class PlayTask extends AsyncTask<String, String, String> {
 
 				values = new ContentValues();
 				values.put(MySQLiteHelper.COLUMN_PLAY_PROGRESS, currentLine);
+				values.put(MySQLiteHelper.COLUMN_STATE, Story.STATE_PLAYED);
 				CloplayerService.getInstance().datasource.updateStory(story, values);
 			}
 
 		}
-
-		ContentValues values = new ContentValues();
-		values = new ContentValues();
-		values.put(MySQLiteHelper.COLUMN_STATE, Story.STATE_PLAYED);
-		CloplayerService.getInstance().datasource.updateStory(story, values);
-
+		
 		// CloplayerService.getInstance().stopForeground(true);
 
 		return "";

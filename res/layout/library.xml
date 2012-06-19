@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:background="@color/clogrey1"
+        android:baselineAligned="true" >
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="33dp"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="5sp"
+            android:src="@drawable/logo" />
+
+        <ImageButton
+            android:id="@+id/new_button"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@drawable/toolbar_buttons"
+            android:paddingLeft="5sp"
+            android:paddingRight="5sp"
+            android:src="@drawable/new1" />
+
+        <ImageButton
+            android:id="@+id/archive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@drawable/toolbar_buttons"
+            android:paddingLeft="5sp"
+            android:paddingRight="5sp"
+            android:src="@drawable/archive" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="5sp"
+            android:baselineAligned="false"
+            android:gravity="right"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/play_all"
+                android:layout_width="40sp"
+                android:layout_height="fill_parent"
+                android:background="@drawable/toolbar_buttons"
+                android:paddingLeft="5sp"
+                android:paddingRight="5sp"
+                android:src="@drawable/play" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout1"
+        android:background="@color/clogrey"
+        android:baselineAligned="true"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5sp"
+            android:gravity="center"
+            android:text="New"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/now_playing"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout9"
+        android:background="@color/cloblue"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/now"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Now Playing"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/clogrey" />
+
+        <TextView
+            android:id="@+id/now_playing_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Google Aquired Cloplayer"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/clowhite" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout9"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/clogrey" >
+
+        <TextView
+            android:id="@+id/refresh_articles"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Last sync : 2 days ago"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/now_playing"
+        android:layout_below="@+id/linearLayout2"
+        android:drawSelectorOnTop="false" />
+
+</RelativeLayout>
