@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -15,11 +16,14 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cloplayer.LibraryActivity.IncomingHandler;
+import com.cloplayer.http.URLHelper;
 import com.cloplayer.utils.ServerConstants;
 
 public class PlayNowActivity extends Activity {
 
 	Messenger mService = null;
+	final Messenger mClient = new Messenger(new IncomingHandler());
 	boolean mIsBound;
 
 	SharedPreferences globalSettings;
@@ -28,7 +32,7 @@ public class PlayNowActivity extends Activity {
 	TextView headlineText;
 	TextView detailText;
 
-	String extra_text = "http://cloplayer.com";
+	String extra_text = URLHelper.home();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +65,9 @@ public class PlayNowActivity extends Activity {
 
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
+			mIsBound = true;
 			mService = new Messenger(service);
+			sendEmptyMessageToService(CloplayerService.MSG_REGISTER_CLIENT);
 
 			SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
 			String userId = globalSettings.getString("userId", null);
@@ -77,7 +83,7 @@ public class PlayNowActivity extends Activity {
 				finish();
 			} else {
 				Log.e("PlayNowActivity", "User logged in as : " + userId);
-				
+
 				Toast.makeText(PlayNowActivity.this, "Will be played shortly...", Toast.LENGTH_SHORT).show();
 
 				playSource(extra_text);
@@ -100,6 +106,7 @@ public class PlayNowActivity extends Activity {
 		if (mIsBound && mService != null) {
 			try {
 				Message msg = Message.obtain(null, messageId, value, 0);
+				msg.replyTo = mClient;
 				mService.send(msg);
 			} catch (RemoteException e) {
 			}
@@ -110,6 +117,7 @@ public class PlayNowActivity extends Activity {
 		if (mIsBound && mService != null) {
 			try {
 				Message msg = Message.obtain(null, messageId, value);
+				msg.replyTo = mClient;
 				mService.send(msg);
 			} catch (RemoteException e) {
 			}
@@ -120,6 +128,7 @@ public class PlayNowActivity extends Activity {
 		if (mIsBound && mService != null) {
 			try {
 				Message msg = Message.obtain(null, messageId);
+				msg.replyTo = mClient;
 				mService.send(msg);
 			} catch (RemoteException e) {
 			}
@@ -145,6 +154,22 @@ public class PlayNowActivity extends Activity {
 			doUnbindService();
 		} catch (Throwable t) {
 			Log.e("CloplayerActivity", "Failed to unbind from the service", t);
+		}
+	}
+
+	class IncomingHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case CloplayerService.MSG_BOOTSTRAP_COMPLETE:
+				break;
+			case CloplayerService.MSG_NETWORK_ERROR:
+				Toast.makeText(PlayNowActivity.this, "Network Failure. Cloplayer will be in offline mode.", Toast.LENGTH_SHORT).show();
+				finish();
+				break;
+			default:
+				super.handleMessage(msg);
+			}
 		}
 	}
 

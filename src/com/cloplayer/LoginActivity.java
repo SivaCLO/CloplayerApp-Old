@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.cloplayer.http.AsyncHTTPClient;
+import com.cloplayer.http.URLHelper;
 import com.cloplayer.utils.ServerConstants;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
@@ -40,7 +41,7 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.login);
-		
+
 		progressBar = new ProgressDialog(this);
 		progressBar.setMessage("Connecting to Facebook");
 		progressBar.setIndeterminate(true);
@@ -57,11 +58,11 @@ public class LoginActivity extends Activity {
 				if (email == null || password == null || email.equals("") || password.equals("")) {
 					Toast.makeText(LoginActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
 				} else {
-					
-					progressBar.setMessage("Logging in...");				
+
+					progressBar.setMessage("Logging in...");
 					progressBar.show();
 
-					AsyncHTTPClient client = new AsyncHTTPClient("http://api.cloplayer.com/api/login?email=" + email + "&password=" + password) {
+					AsyncHTTPClient client = new AsyncHTTPClient(URLHelper.login(email, password)) {
 
 						public void onSuccessResponse(String response) {
 							try {
@@ -115,7 +116,7 @@ public class LoginActivity extends Activity {
 									((EditText) findViewById(R.id.email)).setText(email);
 									((EditText) findViewById(R.id.email)).setEnabled(false);
 									((EditText) findViewById(R.id.password)).requestFocus();
-									
+
 									progressBar.hide();
 								}
 							});

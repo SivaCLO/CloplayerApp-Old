@@ -1,5 +1,6 @@
 package com.cloplayer;
 
+import com.cloplayer.http.URLHelper;
 import com.cloplayer.utils.ServerConstants;
 
 import android.app.Activity;
@@ -28,7 +29,7 @@ public class PlayLaterActivity extends Activity {
 	TextView headlineText;
 	TextView detailText;
 
-	String extra_text = "http://cloplayer.com";
+	String extra_text = URLHelper.home();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

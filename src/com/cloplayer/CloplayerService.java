@@ -2,6 +2,7 @@ package com.cloplayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +21,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.cloplayer.http.AsyncHTTPClient;
+import com.cloplayer.http.URLHelper;
 import com.cloplayer.sqlite.Story;
 import com.cloplayer.sqlite.StoryDataSource;
 import com.cloplayer.utils.ServerConstants;
@@ -39,6 +41,7 @@ public class CloplayerService extends Service {
 	public static final int MSG_PAUSE_UNPAUSE_PLAYING = 4;
 	public static final int MSG_PLAY_ALL = 5;
 	public static final int MSG_STORE_SOURCE = 6;
+	public static final int MSG_PLAY_NEXT = 7;
 
 	public static final int MSG_NEXT1 = 11;
 	public static final int MSG_NEXT5 = 12;
@@ -50,7 +53,10 @@ public class CloplayerService extends Service {
 
 	public static final int MSG_REFRESH_ARTICLES = 71;
 	public static final int MSG_REFRESH_ARTICLES_COMPLETE = 72;
-	
+	public static final int MSG_BOOTSTRAP_COMPLETE = 73;
+
+	public static final int MSG_NETWORK_ERROR = 80;
+
 	public static final int CATEGORY_UNREAD = 0;
 	public static final int CATEGORY_READ = 1;
 
@@ -60,11 +66,19 @@ public class CloplayerService extends Service {
 	public StoryDataSource datasource = new StoryDataSource(this);
 	public Story currentStory;
 
+	List<Story> playlist;
+
 	public HashMap<String, byte[]> cache = new HashMap<String, byte[]>();
 
 	public static CloplayerService getInstance() {
 		return instance;
 	}
+
+	public static final int MODE_START = 0;
+	public static final int MODE_ONLINE = 1;
+	public static final int MODE_OFFLINE = -1;
+
+	public int mode = MODE_ONLINE;
 
 	@Override
 	public void onCreate() {
@@ -72,6 +86,14 @@ public class CloplayerService extends Service {
 		instance = this;
 		datasource.open();
 		isRunning = true;
+
+		SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
+		SharedPreferences.Editor editor = globalSettings.edit();
+		editor.remove("nowPlaying");
+		editor.remove("nextPlaying");
+		editor.remove("refreshing");
+		editor.commit();
+
 		Log.i("CloplayerService", "Service Started.");
 	}
 
@@ -102,7 +124,10 @@ public class CloplayerService extends Service {
 				playSource(msg);
 				break;
 			case MSG_PLAY_ALL:
-				Log.e("CloplayerService", "Play All request recieved for : " + msg.arg1);
+				playAll(msg.arg1);
+				break;
+			case MSG_PLAY_NEXT:
+				playNext();
 				break;
 			case MSG_REFRESH_ARTICLES:
 				refreshArticles();
@@ -126,6 +151,31 @@ public class CloplayerService extends Service {
 				super.handleMessage(msg);
 			}
 		}
+	}
+
+	public void playAll(int category) {
+
+		switch (category) {
+		case CATEGORY_READ:
+			playlist = datasource.getPlayedStories();
+			break;
+		case CATEGORY_UNREAD:
+			playlist = datasource.getUnplayedStories();
+			break;
+		}
+
+		playNext();
+	}
+
+	public void playNext() {
+		if (playlist != null && playlist.size() > 0)
+			playStory(playlist.remove(0));
+	}
+
+	public Story getNext() {
+		if (playlist != null && playlist.size() > 0)
+			return playlist.get(0);
+		return null;
 	}
 
 	public String cleanUrl(String url) {
@@ -153,8 +203,8 @@ public class CloplayerService extends Service {
 		editor.commit();
 
 		String userId = globalSettings.getString("userId", null);
-		
-		AsyncHTTPClient client = new AsyncHTTPClient("http://api.cloplayer.com/api/list?userId=" + userId) {
+
+		AsyncHTTPClient client = new AsyncHTTPClient(URLHelper.list(userId)) {
 
 			public void onSuccessResponse(String response) {
 				try {
@@ -170,6 +220,7 @@ public class CloplayerService extends Service {
 					editor.commit();
 
 					CloplayerService.getInstance().sendEmptyMessageToUI(CloplayerService.MSG_REFRESH_ARTICLES_COMPLETE);
+					mode = MODE_ONLINE;
 
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -177,40 +228,59 @@ public class CloplayerService extends Service {
 			}
 
 			public void onErrorResponse(Exception e) {
-				Log.e("LoginActivity", "Error", e);
+				Log.e("CloplayerService", "Error", e);
+
+				editor.putBoolean("refreshing", false);
+				editor.commit();
+
+				CloplayerService.getInstance().sendEmptyMessageToUI(CloplayerService.MSG_NETWORK_ERROR);
+				mode = MODE_OFFLINE;
 			}
 		};
 
 		client.execute();
 	}
 
-	private void playSource(Message msg) {
+	private void playStory(Story story) {
 
-		isPaused = false;
+		if (story != null) {
+			isPaused = false;
 
-		String sourceUrl = cleanUrl((String) msg.obj);
+			if (currentStory == null || currentStory != story) {
+				stopReading();
+			}
 
-		if (currentStory == null || !currentStory.getUrl().equals(sourceUrl)) {
-			stopReading();
+			currentStory = story;
+
+			if (currentStory.getState() < Story.STATE_BOOTSTRAPPED) {
+				currentStory.bootstrap();
+			}
+
+			if (mode != MODE_OFFLINE) {
+
+				if (currentStory.getState() < Story.STATE_DOWNLOADED) {
+					currentStory.download();
+				}
+				currentStory.play();
+			}
 		}
-
-		currentStory = datasource.findStory(sourceUrl);
-		if (currentStory == null) {
-			currentStory = datasource.addStory(sourceUrl);
-		}
-
-		if (currentStory.getState() < Story.STATE_BOOTSTRAPPED) {
-			currentStory.bootstrap();
-		}
-
-		if (currentStory.getState() < Story.STATE_DOWNLOADED) {
-			currentStory.download();
-		}
-
-		currentStory.play();
 
 		refreshArticles();
 
+	}
+
+	private void playSource(Message msg) {
+
+		String sourceUrl = cleanUrl((String) msg.obj);
+
+		Story story = datasource.findStory(sourceUrl);
+		if (story == null) {
+			story = datasource.addStory(sourceUrl);
+		}
+
+		playlist = new ArrayList<Story>();
+
+		playStory(story);
 	}
 
 	private void storeSource(Message msg) {
@@ -232,7 +302,7 @@ public class CloplayerService extends Service {
 			story.bootstrap();
 		}
 
-		if (story.getState() < Story.STATE_DOWNLOADED) {
+		if (story.getState() < Story.STATE_DOWNLOADED && mode != MODE_OFFLINE) {
 			story.download();
 		}
 	}
@@ -300,6 +370,14 @@ public class CloplayerService extends Service {
 
 	@Override
 	public void onDestroy() {
+
+		SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
+		SharedPreferences.Editor editor = globalSettings.edit();
+		editor.remove("nowPlaying");
+		editor.remove("nextPlaying");
+		editor.remove("refreshing");
+		editor.commit();
+
 		super.onDestroy();
 
 		stopReading();

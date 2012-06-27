@@ -11,7 +11,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 public abstract class SyncHTTPClient {
@@ -47,8 +46,9 @@ public abstract class SyncHTTPClient {
 			e.printStackTrace();
 			onErrorResponse(e);
 		}
-		
-		onSuccessResponse(responseString);
+
+		if (responseString != null)
+			onSuccessResponse(responseString);
 	}
 
 	public abstract void onSuccessResponse(String response);

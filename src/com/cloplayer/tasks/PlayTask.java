@@ -65,6 +65,11 @@ public class PlayTask extends AsyncTask<String, String, String> {
 		SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
 		SharedPreferences.Editor editor = globalSettings.edit();
 		editor.putInt("nowPlaying", (int) story.getId());
+		Story nextStory = CloplayerService.getInstance().getNext();
+		if (nextStory != null)
+			editor.putInt("nextPlaying", (int) nextStory.getId());
+		else
+			editor.remove("nextPlaying");
 		editor.commit();
 
 		CloplayerService.getInstance().showNotification(story.getHeadline(), story.getHeadline());
@@ -131,7 +136,7 @@ public class PlayTask extends AsyncTask<String, String, String> {
 			}
 
 		}
-		
+
 		// CloplayerService.getInstance().stopForeground(true);
 
 		return "";
@@ -141,6 +146,9 @@ public class PlayTask extends AsyncTask<String, String, String> {
 	protected void onPostExecute(String result) {
 		cleanup(true);
 		story.playTask = null;
+
+		if (!isCanceled)
+			CloplayerService.getInstance().playNext();
 	}
 
 	public int getCurrentLine() {
@@ -161,7 +169,7 @@ public class PlayTask extends AsyncTask<String, String, String> {
 		isCanceled = true;
 		cleanup(closeNotification);
 	}
-	
+
 	public void cleanup(boolean closeNotification) {
 		at.stop();
 		at.flush();
@@ -171,6 +179,7 @@ public class PlayTask extends AsyncTask<String, String, String> {
 		SharedPreferences globalSettings = CloplayerService.getInstance().getSharedPreferences(ServerConstants.CLOPLAYER_GLOBAL_PREFS, 0);
 		SharedPreferences.Editor editor = globalSettings.edit();
 		editor.remove("nowPlaying");
+		editor.remove("nextPlaying");
 		editor.commit();
 
 		if (closeNotification)

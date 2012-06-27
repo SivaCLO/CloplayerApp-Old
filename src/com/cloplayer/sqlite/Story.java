@@ -8,9 +8,9 @@ import com.cloplayer.tasks.PlayTask;
 public class Story {
 	private long id;
 	private String url;
-	private String domain;
-	private String headline;
-	private String detail;
+	private String domain = "Unknown";
+	private String headline = "Unknown";
+	private String detail = "Unknown";
 	private int itemCount;
 	private int downloadProgress;
 	private int playProgress;
@@ -31,7 +31,7 @@ public class Story {
 			bootstrapTask.execute();
 		}
 	}
-	
+
 	public void download() {
 		if (downloadTask == null) {
 			downloadTask = new DownloadTask(this);
@@ -45,7 +45,7 @@ public class Story {
 			playTask.start();
 		}
 	}
-	
+
 	public void resume() {
 		if (playTask == null) {
 			playTask = new PlayTask(this, playProgress);
@@ -60,7 +60,7 @@ public class Story {
 			CloplayerService.getInstance().sendIntMessageToUI(CloplayerService.MSG_UPDATE_STORY, (int) getId());
 		}
 	}
-	
+
 	public void pause() {
 		if (playTask != null) {
 			playTask.stop(false);
@@ -100,6 +100,8 @@ public class Story {
 
 	public void setDomain(String domain) {
 		this.domain = domain;
+		if (domain == null || domain == "")
+			this.domain = "Unknown";
 	}
 
 	public String getHeadline() {
@@ -108,6 +110,8 @@ public class Story {
 
 	public void setHeadline(String headline) {
 		this.headline = headline;
+		if (headline == null || headline == "")
+			this.headline = "Unknown";
 	}
 
 	public String getDetail() {

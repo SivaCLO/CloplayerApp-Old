@@ -54,7 +54,8 @@ public abstract class AsyncHTTPClient extends AsyncTask<String, String, String> 
 	@Override
 	protected void onPostExecute(String result) {
 		super.onPostExecute(result);
-		onSuccessResponse(result);
+		if (result != null)
+			onSuccessResponse(result);
 	}
 
 	public abstract void onSuccessResponse(String response);

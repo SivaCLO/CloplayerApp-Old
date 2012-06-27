@@ -62,6 +62,8 @@ public class DownloadTask extends AsyncTask<String, String, String> {
 			Log.e("DownloadTask", "Downloading voice for : " + text);
 			byte[] byteArray = MaryConnector.getAudio(text);
 
+			if(byteArray == null) return;
+			
 			Log.e("DownloadTask", "Downloaded voice for : " + byteArray.length);
 
 			synchronized (story) {

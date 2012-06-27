@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -52,6 +54,14 @@ public class LibraryActivity extends Activity {
 
 	HashMap<Integer, View> storyLocations;
 
+	private static final int MODE_START = 0;
+	private static final int MODE_ONLINE = 1;
+	private static final int MODE_OFFLINE = -1;
+
+	int mode = MODE_START;
+
+	ProgressDialog progressBar;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -89,8 +99,17 @@ public class LibraryActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				sendIntMessageToService(CloplayerService.MSG_PLAY_ALL, storyCategory);
+
+				Intent intentToGo = new Intent();
+				intentToGo.setClass(LibraryActivity.this, PlayerActivity.class);
+				startActivity(intentToGo);
+				finish();
 			}
 		});
+
+		progressBar = new ProgressDialog(this);
+		progressBar.setMessage("Syncronizing...");
+		progressBar.setIndeterminate(true);
 
 		inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -147,6 +166,7 @@ public class LibraryActivity extends Activity {
 				Intent intentToGo = new Intent();
 				intentToGo.setClass(LibraryActivity.this, HomeActivity.class);
 				startActivity(intentToGo);
+				finish();
 			} else {
 				Log.e("LibraryActivity", "User logged in as : " + userId);
 				updateUI();
@@ -218,6 +238,11 @@ public class LibraryActivity extends Activity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case CloplayerService.MSG_REFRESH_ARTICLES_COMPLETE:
+				mode = MODE_ONLINE;
+				updateUI();
+				break;
+			case CloplayerService.MSG_NETWORK_ERROR:
+				mode = MODE_OFFLINE;
 				updateUI();
 				break;
 			default:
@@ -231,6 +256,11 @@ public class LibraryActivity extends Activity {
 		headlineView.setText(story.getHeadline());
 		TextView sourceView = (TextView) view.findViewById(R.id.source);
 		sourceView.setText(story.getDomain());
+
+		if ((mode == MODE_START || mode == MODE_OFFLINE) && story.getState() < Story.STATE_DOWNLOADED) {
+			headlineView.setTextColor(Color.DKGRAY);
+			view.setBackgroundColor(Color.rgb(255, 230, 230));
+		}
 	}
 
 	public void updateUI() {
@@ -262,7 +292,11 @@ public class LibraryActivity extends Activity {
 			((ImageButton) findViewById(R.id.play_all)).setVisibility(View.VISIBLE);
 		} else {
 			((TextView) findViewById(R.id.title)).setText("ARCHIVES");
-			values = CloplayerService.getInstance().datasource.getplayedStories();
+			values = CloplayerService.getInstance().datasource.getPlayedStories();
+			((ImageButton) findViewById(R.id.play_all)).setVisibility(View.VISIBLE);
+		}
+
+		if (values == null || values.size() == 0) {
 			((ImageButton) findViewById(R.id.play_all)).setVisibility(View.GONE);
 		}
 
@@ -274,6 +308,7 @@ public class LibraryActivity extends Activity {
 			public View getView(int position, View convertView, ViewGroup parent) {
 
 				Story story = getItem(position);
+
 				View rowView = inflater.inflate(R.layout.story, parent, false);
 
 				paintStory(rowView, story);
@@ -290,36 +325,35 @@ public class LibraryActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
 				Story story = values.get(position);
-				playSource(story.getUrl());
 
-				Intent intentToGo = new Intent();
-				intentToGo.setClass(LibraryActivity.this, PlayerActivity.class);
-				startActivity(intentToGo);
-				finish();
+				if ((mode == MODE_START || mode == MODE_OFFLINE) && story.getState() < Story.STATE_DOWNLOADED) {
+
+				} else {
+					playSource(story.getUrl());
+					Intent intentToGo = new Intent();
+					intentToGo.setClass(LibraryActivity.this, PlayerActivity.class);
+					startActivity(intentToGo);
+					finish();
+				}
 			}
 		});
 
 		boolean refreshing = globalSettings.getBoolean("refreshing", false);
 		if (refreshing)
-			setRefreshButton();
+			progressBar.show();
 		else
-			resetRefreshButton();
-	}
+			progressBar.hide();
 
-	public void resetRefreshButton() {
 		final TextView refreshButton = (TextView) findViewById(R.id.refresh_articles);
-		refreshButton.setEnabled(true);
-		refreshButton.setText("Refresh");
-	}
-
-	public void setRefreshButton() {
-		final TextView refreshButton = (TextView) findViewById(R.id.refresh_articles);
-		refreshButton.setEnabled(false);
-		refreshButton.setText("Refreshing");
+		if (mode == MODE_OFFLINE) {
+			refreshButton.setText("Sync Failed. Offline Mode");
+		} else {
+			refreshButton.setText("Sync Successful.");
+		}
 	}
 
 	public void triggerRefresh() {
-		setRefreshButton();
+		progressBar.show();
 		sendEmptyMessageToService(CloplayerService.MSG_REFRESH_ARTICLES);
 	}
 

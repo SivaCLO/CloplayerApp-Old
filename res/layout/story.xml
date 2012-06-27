@@ -5,24 +5,18 @@
     android:gravity="center"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:gravity="top" >
-
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginRight="5dp"
-            android:src="@drawable/news_logo_default" />
+        android:layout_marginTop="5dp" >
 
         <LinearLayout
             android:id="@+id/details"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/logo"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -44,7 +38,17 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/clogrey" />
         </LinearLayout>
-    </LinearLayout>
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/play_black" />
+
+    </RelativeLayout>
 
     <View
         android:layout_width="fill_parent"

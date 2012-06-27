@@ -120,7 +120,7 @@ public class StoryDataSource {
 		return stories;
 	}
 	
-	public List<Story> getplayedStories() {
+	public List<Story> getPlayedStories() {
 		List<Story> stories = new ArrayList<Story>();
 
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_STORIES, allColumns, MySQLiteHelper.COLUMN_STATE + " = " + Story.STATE_PLAYED, null, null, null, null);

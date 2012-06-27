@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/retryPage"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center_vertical|center_horizontal"
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
+        android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:layout_gravity="top"
+        android:layout_alignParentTop="true"
         android:background="@color/clogrey1"
         android:baselineAligned="true" >
 
@@ -32,7 +30,7 @@
             android:textColor="@color/clowhite" />
 
         <LinearLayout
-            android:id="@+id/linearLayout3"
+            android:id="@+id/linearLayout11"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginLeft="5sp"
@@ -57,21 +55,107 @@
                 android:paddingLeft="5sp"
                 android:paddingRight="5sp"
                 android:src="@drawable/up_arrow" />
-
         </LinearLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout3"
+        android:maxHeight="5dip"
+        android:minHeight="5dip"
+        android:progressDrawable="@drawable/greenprogress" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_above="@+id/next_playing"
+        android:layout_gravity="bottom"
+        android:background="@color/clogrey"
+        android:baselineAligned="false" >
+
+        <ImageButton
+            android:id="@+id/back5_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/minus3" />
+
+        <ImageButton
+            android:id="@+id/back1_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/minus1" />
+
+        <ImageButton
+            android:id="@+id/pause_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/pause" />
+
+        <ImageButton
+            android:id="@+id/next1_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/plus1" />
+
+        <ImageButton
+            android:id="@+id/next5_button"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bottoolbar_buttons"
+            android:src="@drawable/plus3" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/next_playing"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/clogrey1"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/next"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Next"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/clogrey" />
+
+        <TextView
+            android:id="@+id/next_playing_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Google Aquired Cloplayer"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/clowhite" />
     </LinearLayout>
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/retryPage"
+        android:id="@+id/linearLayout2"
         android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/progress_bar"
+        android:layout_below="@+id/linearLayout1"
         android:orientation="vertical"
-        android:paddingTop="10sp"
         android:paddingLeft="10sp"
-        android:paddingRight="10sp" >
+        android:paddingRight="10sp"
+        android:paddingTop="10sp" >
 
         <TextView
             android:id="@+id/headline"
@@ -97,68 +181,4 @@
             android:textColor="@color/clogrey" />
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:maxHeight="5dip"
-        android:minHeight="5dip"
-        android:progressDrawable="@drawable/greenprogress" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:background="@color/clogrey"
-        android:baselineAligned="false" >
-
-        <ImageButton
-            android:id="@+id/back5_button"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bottoolbar_buttons"
-            android:src="@drawable/minus3"
-            android:text="-3" />
-
-        <ImageButton
-            android:id="@+id/back1_button"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bottoolbar_buttons"
-            android:src="@drawable/minus1"
-            android:text="-1" />
-
-        <ImageButton
-            android:id="@+id/pause_button"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bottoolbar_buttons"
-            android:src="@drawable/pause"
-            android:text="Play" />
-
-        <ImageButton
-            android:id="@+id/next1_button"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bottoolbar_buttons"
-            android:src="@drawable/plus1"
-            android:text="+1" />
-
-        <ImageButton
-            android:id="@+id/next5_button"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bottoolbar_buttons"
-            android:src="@drawable/plus3"
-            android:text="+3" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

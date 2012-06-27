@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -53,14 +54,13 @@ public class PlayerActivity extends Activity {
 		ViewGroup parent = (ViewGroup) findViewById(R.id.root);
 		LayoutInflater inflater = LayoutInflater.from(getBaseContext());
 
-		//parent.addView(inflater.inflate(R.layout.logo, parent, false));
+		// parent.addView(inflater.inflate(R.layout.logo, parent, false));
 		parent.addView(inflater.inflate(R.layout.player, parent, false));
 
 		sourceUrlText = (TextView) findViewById(R.id.sourceUrl);
 		headlineText = (TextView) findViewById(R.id.headline);
 		progress = (ProgressBar) findViewById(R.id.progress_bar);
 		detailText = (TextView) findViewById(R.id.detail_text);
-		
 
 		detailText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
@@ -255,15 +255,43 @@ public class PlayerActivity extends Activity {
 			progDailog.hide();
 		}
 
-		if (!first && progress.getProgress() == progress.getMax()) {
-			finish();
-		}
-		
 		ImageButton pauseButton = (ImageButton) findViewById(R.id.pause_button);
-		if(story.isPlaying()) {			
+		if (story.isPlaying()) {
 			pauseButton.setImageResource(R.drawable.pause);
 		} else {
 			pauseButton.setImageResource(R.drawable.play);
 		}
+
+		if (!first && progress.getProgress() == progress.getMax()) {
+			pauseButton.setImageResource(R.drawable.play);
+		}
+
+		LinearLayout nextLayout = (LinearLayout) findViewById(R.id.next_playing);
+		TextView nextText = (TextView) findViewById(R.id.next_playing_text);
+		int nextStoryId = globalSettings.getInt("nextPlaying", -1);
+		if (nextStoryId != -1) {
+			Story nextStory = CloplayerService.getInstance().datasource.getStory(nextStoryId);
+			if (nextStory != null) {
+				nextText.setText(nextStory.getHeadline());
+				nextLayout.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						sendEmptyMessageToService(CloplayerService.MSG_PLAY_NEXT);
+					}
+				});
+			}
+		} else {
+			nextText.setText("Nothing in Queue. Click Play All in Library to play a Queue");
+			nextLayout.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					Intent intentToGo = new Intent();
+					intentToGo.setClass(PlayerActivity.this, LibraryActivity.class);
+					startActivity(intentToGo);
+					finish();
+				}
+			});
+		}
+
 	}
 }
